@@ -726,7 +726,476 @@
 </style>
 
 <style>
-.comanda-sync-status{font-size:12px;font-weight:800;padding:5px 9px;border-radius:999px;background:#f3f4f6;color:#6b7280;white-space:nowrap}.comanda-sync-status.salvando{background:#fff7ed;color:#c2410c}.comanda-sync-status.salvo{background:#dcfce7;color:#15803d}.comanda-sync-status.erro{background:#fee2e2;color:#b91c1c}
+.comanda-sync-status{font-size:12px;font-weight:800;padding:5px 9px;border-radius:999px;background:#f3f4f6;color:#6b7280;white-space:nowrap}.comanda-sync-status.salvando{background:#fff7ed;color:#c2410c}.comanda-sync-status.salvo{background:#dcfce7;color:#15803d}.
+/* =====================================================
+   HISTÓRICO DE VENDAS
+===================================================== */
+
+.historico-cabecalho{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:16px;
+  margin-bottom:20px;
+}
+
+.historico-cabecalho h1{
+  font-size:28px;
+}
+
+.historico-cabecalho p{
+  color:#6b7280;
+}
+
+.historico-filtros{
+
+  background:#fff;
+
+  border-radius:12px;
+
+  padding:16px;
+
+  margin-bottom:20px;
+
+  box-shadow:0 2px 8px rgba(0,0,0,.06);
+
+}
+
+.historico-grid{
+
+  display:grid;
+
+  grid-template-columns:
+
+  2fr
+
+  1fr
+
+  1fr
+
+  1fr
+
+  1fr;
+
+  gap:12px;
+
+}
+
+.historico-grid input,
+.historico-grid select{
+
+  width:100%;
+
+  padding:11px;
+
+  border:1px solid #d1d5db;
+
+  border-radius:8px;
+
+  background:#fff;
+
+}
+
+.historico-grid input:focus,
+.historico-grid select:focus{
+
+  outline:none;
+
+  border-color:#2563eb;
+
+  box-shadow:0 0 0 3px rgba(37,99,235,.10);
+
+}
+
+.historico-tabela{
+
+  width:100%;
+
+  border-collapse:collapse;
+
+}
+
+.historico-tabela th{
+
+  background:#f9fafb;
+
+  color:#6b7280;
+
+  font-size:13px;
+
+}
+
+.historico-tabela td{
+
+  vertical-align:middle;
+
+}
+
+.historico-tabela tbody tr{
+
+  transition:.18s;
+
+}
+
+.historico-tabela tbody tr:hover{
+
+  background:#f8fbff;
+
+}
+
+.historico-total{
+
+  font-weight:bold;
+
+  color:#16a34a;
+
+}
+
+.historico-cliente{
+
+  font-weight:bold;
+
+}
+
+.historico-data{
+
+  white-space:nowrap;
+
+}
+
+.historico-acoes{
+
+  display:flex;
+
+  gap:6px;
+
+  justify-content:center;
+
+}
+
+.historico-btn{
+
+  border:none;
+
+  border-radius:7px;
+
+  cursor:pointer;
+
+  padding:7px 10px;
+
+  transition:.20s;
+
+}
+
+.historico-btn:hover{
+
+  transform:translateY(-1px);
+
+}
+
+.historico-btn-visualizar{
+
+  background:#eff6ff;
+
+  color:#2563eb;
+
+}
+
+.historico-btn-imprimir{
+
+  background:#f3f4f6;
+
+  color:#374151;
+
+}
+
+.historico-badge{
+
+  display:inline-flex;
+
+  align-items:center;
+
+  gap:6px;
+
+  padding:6px 10px;
+
+  border-radius:999px;
+
+  font-size:12px;
+
+  font-weight:bold;
+
+}
+
+.historico-origem-mesa{
+
+  background:#eff6ff;
+
+  color:#2563eb;
+
+}
+
+.historico-origem-balcao{
+
+  background:#ecfeff;
+
+  color:#0891b2;
+
+}
+
+.historico-origem-delivery{
+
+  background:#f0fdf4;
+
+  color:#15803d;
+
+}
+
+.historico-origem-ifood{
+
+  background:#fef2f2;
+
+  color:#dc2626;
+
+}
+
+.historico-pagamento{
+
+  display:inline-flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  padding:6px 10px;
+
+  border-radius:999px;
+
+  font-size:12px;
+
+  font-weight:bold;
+
+}
+
+.pagamento-pix{
+
+  background:#dcfce7;
+
+  color:#15803d;
+
+}
+
+.pagamento-dinheiro{
+
+  background:#fff7ed;
+
+  color:#c2410c;
+
+}
+
+.pagamento-debito{
+
+  background:#dbeafe;
+
+  color:#1d4ed8;
+
+}
+
+.pagamento-credito{
+
+  background:#ede9fe;
+
+  color:#6d28d9;
+
+}
+
+.pagamento-misto{
+
+  background:#f3f4f6;
+
+  color:#374151;
+
+}
+
+.historico-vazio{
+
+  text-align:center;
+
+  color:#6b7280;
+
+  padding:40px;
+
+}
+
+.historico-paginacao{
+
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:center;
+
+  margin-top:20px;
+
+}
+
+.historico-paginacao button{
+
+  border:none;
+
+  background:#2563eb;
+
+  color:#fff;
+
+  padding:9px 14px;
+
+  border-radius:8px;
+
+  cursor:pointer;
+
+}
+
+.historico-paginacao button:disabled{
+
+  opacity:.45;
+
+  cursor:not-allowed;
+
+}
+
+/* Responsividade */
+
+@media(max-width:1100px){
+
+  .historico-grid{
+
+    grid-template-columns:
+
+    1fr
+
+    1fr;
+
+  }
+
+}
+
+@media(max-width:700px){
+
+  .historico-grid{
+
+    grid-template-columns:1fr;
+
+  }
+
+}comanda-sync-status.erro{background:#fee2e2;color:#b91c1c}
+
+/* =====================================================
+   MODAL - HISTÓRICO DE VENDAS
+===================================================== */
+
+.historico-resumo-card{
+
+    background:#f9fafb;
+
+    border-radius:10px;
+
+    padding:14px;
+
+}
+
+.historico-resumo-titulo{
+
+    font-size:12px;
+
+    color:#6b7280;
+
+    margin-bottom:6px;
+
+}
+
+.historico-resumo-valor{
+
+    font-size:15px;
+
+    font-weight:bold;
+
+    color:#111827;
+
+    word-break:break-word;
+
+}
+
+#historicoItens td{
+
+    vertical-align:middle;
+
+}
+
+#historicoItens tr:hover{
+
+    background:#f9fafb;
+
+}
+
+.historico-total-modal{
+
+    margin-top:18px;
+
+    display:flex;
+
+    justify-content:flex-end;
+
+    font-size:22px;
+
+    font-weight:bold;
+
+    color:#16a34a;
+
+}
+
+.historico-produto{
+
+    font-weight:bold;
+
+}
+
+.historico-qtd{
+
+    text-align:center;
+
+    width:80px;
+
+}
+
+.historico-valor{
+
+    text-align:right;
+
+    white-space:nowrap;
+
+}
+
+.historico-subtotal{
+
+    text-align:right;
+
+    white-space:nowrap;
+
+    font-weight:bold;
+
+}
+
+@media(max-width:700px){
+
+    #historicoResumo{
+
+        grid-template-columns:1fr;
+
+    }
+
+} 
+
+
 </style>
 </head>
 <body>
@@ -767,9 +1236,12 @@
   💰 Financeiro
 </div>
 
-    <div class="menu-item">
-      📋 Histórico de vendas
-    </div>
+    <div
+  class="menu-item"
+  onclick="abrirPagina('historico', this)"
+>
+  📋 Histórico de vendas
+</div>
 
     <div
       class="menu-item"
@@ -1934,6 +2406,318 @@
 
 </section>
 
+<!-- =====================================================
+     HISTÓRICO DE VENDAS
+====================================================== -->
+
+<section
+  id="pagina-historico"
+  class="pagina"
+>
+
+  <div class="cabecalho-pagina">
+
+    <div class="titulo">
+
+      <h1>Histórico de vendas</h1>
+
+      <p>
+        Consulte todas as vendas realizadas pela Lua de Sorvete.
+      </p>
+
+    </div>
+
+    <div
+      style="
+      display:flex;
+      gap:10px;
+      "
+    >
+
+      <button
+        class="btn btn-secundario"
+        id="btn-imprimir-historico"
+      >
+        🖨 Imprimir
+      </button>
+
+      <button
+        class="btn btn-primario"
+        id="btn-exportar-historico"
+      >
+        📄 Exportar CSV
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- CARDS -->
+
+  <div class="cards">
+
+    <div class="card">
+
+      <div class="card-titulo">
+
+        Total vendido
+
+      </div>
+
+      <div
+        class="card-valor azul"
+        id="historico-total-vendido"
+      >
+
+        R$ 0,00
+
+      </div>
+
+    </div>
+
+
+    <div class="card">
+
+      <div class="card-titulo">
+
+        Vendas
+
+      </div>
+
+      <div
+        class="card-valor verde"
+        id="historico-total-vendas"
+      >
+
+        0
+
+      </div>
+
+    </div>
+
+
+    <div class="card">
+
+      <div class="card-titulo">
+
+        Ticket médio
+
+      </div>
+
+      <div
+        class="card-valor laranja"
+        id="historico-ticket-medio"
+      >
+
+        R$ 0,00
+
+      </div>
+
+    </div>
+
+
+    <div class="card">
+
+      <div class="card-titulo">
+
+        Comandas
+
+      </div>
+
+      <div
+        class="card-valor azul"
+        id="historico-total-comandas"
+      >
+
+        0
+
+      </div>
+
+    </div>
+
+
+    <div class="card">
+
+      <div class="card-titulo">
+
+        Pagamentos
+
+      </div>
+
+      <div
+        id="historico-formas"
+        style="
+        font-size:13px;
+        line-height:1.8;
+        "
+      >
+
+        PIX — 0%
+
+        <br>
+
+        Cartão — 0%
+
+        <br>
+
+        Dinheiro — 0%
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <br>
+
+
+  <!-- FILTROS -->
+
+  <div class="barra-pesquisa">
+
+    <div
+      style="
+      display:grid;
+      grid-template-columns:
+      2fr
+      1fr
+      1fr
+      1fr
+      1fr;
+      gap:12px;
+      "
+    >
+
+      <input
+        type="text"
+        id="historico-pesquisa"
+        placeholder="Pesquisar cliente, venda, comanda..."
+      >
+
+      <select id="historico-origem">
+
+        <option value="">
+          Todas as origens
+        </option>
+
+        <option value="COMANDA">
+          Comandas
+        </option>
+
+        <option value="PDV">
+          Balcão
+        </option>
+
+        <option value="IFOOD">
+          iFood
+        </option>
+
+        <option value="DELIVERY">
+          Delivery
+        </option>
+
+      </select>
+
+
+      <select id="historico-pagamento">
+
+        <option value="">
+          Pagamentos
+        </option>
+
+        <option>
+          PIX
+        </option>
+
+        <option>
+          DINHEIRO
+        </option>
+
+        <option>
+          DÉBITO
+        </option>
+
+        <option>
+          CRÉDITO
+        </option>
+
+        <option>
+          MISTO
+        </option>
+
+      </select>
+
+
+      <input
+        type="date"
+        id="historico-data-inicial"
+      >
+
+      <input
+        type="date"
+        id="historico-data-final"
+      >
+
+    </div>
+
+  </div>
+
+
+  <!-- TABELA -->
+
+  <div class="tabela-container">
+
+    <table>
+
+      <thead>
+
+        <tr>
+
+          <th>Venda</th>
+
+          <th>Data/Hora</th>
+
+          <th>Cliente</th>
+
+          <th>Origem</th>
+          
+          <th>Pagamento</th>
+
+          <th>Total</th>
+
+          <th>Ações</th>
+
+        </tr>
+
+      </thead>
+
+      <tbody
+        id="historico-tabela"
+      >
+
+        <tr>
+
+          <td
+            colspan="8"
+            class="mensagem-vazia"
+          >
+
+            Nenhuma venda encontrada.
+
+          </td>
+
+        </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+</section>
+
 <!-- CONFIGURAÇÕES -->
 
 <section
@@ -2303,7 +3087,30 @@
         painelComandas = dados || { mesas: [], comandas: [] };
         renderizarMesasComandas();
         if (mesaComandaSelecionada) selecionarMesaComanda(mesaComandaSelecionada, false);
-        if (idComandaSelecionada) abrirDetalhesComanda(idComandaSelecionada);
+        if (idComandaSelecionada) {
+
+  const existe = (painelComandas.comandas || []).some(function(c) {
+    return String(c.id) === String(idComandaSelecionada);
+  });
+
+  if (existe) {
+
+    abrirDetalhesComanda(idComandaSelecionada);
+
+  } else {
+
+    idComandaSelecionada = '';
+    detalhesComandaAtual = null;
+
+    const area = document.getElementById('detalhes-comanda-area');
+    if (area) {
+      area.innerHTML =
+        '<div class="comanda-vazia">Selecione uma comanda para visualizar os produtos.</div>';
+    }
+
+  }
+
+}
       })
       .withFailureHandler(function(erro) {
         mostrarNotificacao(erro.message || 'Erro ao carregar comandas.', 'erro');
@@ -2439,11 +3246,15 @@
 
     google.script.run
       .withSuccessHandler(function(comanda) {
-        detalhesComandaAtual = comanda;
-        cacheDetalhesComandas[String(comanda.id)] = comanda;
-        renderizarDetalhesComanda();
-        carregarProdutosParaComanda();
-      })
+
+    const copia = JSON.parse(JSON.stringify(comanda));
+
+    detalhesComandaAtual = copia;
+    cacheDetalhesComandas[String(copia.id)] = copia;
+
+    renderizarDetalhesComanda();
+    carregarProdutosParaComanda();
+})
       .withFailureHandler(function(erro) {
         mostrarNotificacao(erro.message || 'Erro ao abrir comanda.', 'erro');
       })
@@ -2581,7 +3392,7 @@
   function adicionarProdutoNaComanda(idProduto, quantidade, pesoKg) {
     google.script.run
       .withSuccessHandler(function(comanda) {
-        detalhesComandaAtual = comanda;
+        detalhesComandaAtual = JSON.parse(JSON.stringify(comanda));
         sincronizarComandaLocal(comanda);
         renderizarDetalhesComanda();
       })
@@ -2801,8 +3612,11 @@
   }
 
   function executarTransferenciaComanda(item, idDestino, quantidade) {
+
+
+
     const destino = comandasDestinoTransferencia().find(function(c){ return String(c.id) === String(idDestino); });
-    if (!destino) { mostrarNotificacao('Comanda de destino inválida.', 'erro'); return; }
+      if (!destino) { mostrarNotificacao('Comanda de destino inválida.', 'erro'); return; }
 
     // V4.1: atualização otimista. A interface muda imediatamente e o Apps Script salva em segundo plano.
     const snapshotOrigem = JSON.parse(JSON.stringify(detalhesComandaAtual));
@@ -2855,11 +3669,12 @@
 
     renderizarDetalhesComanda();
     selecionarMesaComanda(mesaComandaSelecionada, false);
-    definirStatusSyncComanda('salvando');
+    // definirStatusSyncComanda('salvando');
     mostrarNotificacao('✓ ' + item.nomeProduto + ' transferido para ' + nomeComandaTransferencia(destino) + '. Salvando...', 'sucesso');
 
     transferenciasPendentesServidor++;
     renderizarDetalhesComanda();
+    
     google.script.run.withSuccessHandler(function(res){
       transferenciasPendentesServidor = Math.max(0, transferenciasPendentesServidor - 1);
       if (!res || !res.sucesso || !res.confirmado || !res.origem || !res.destino) {
@@ -2868,7 +3683,7 @@
         cacheDetalhesComandas[idOrigem] = JSON.parse(JSON.stringify(snapshotOrigem));
         renderizarDetalhesComanda();
         selecionarMesaComanda(mesaComandaSelecionada, false);
-        definirStatusSyncComanda('erro');
+        // definirStatusSyncComanda('erro');
         mostrarNotificacao('A transferência não foi confirmada pelo servidor e foi desfeita na tela.', 'erro');
         return;
       }
@@ -2887,7 +3702,7 @@
 
       renderizarDetalhesComanda();
       selecionarMesaComanda(mesaComandaSelecionada, false);
-      definirStatusSyncComanda('salvo');
+      // definirStatusSyncComanda('salvo');
     }).withFailureHandler(function(e){
       transferenciasPendentesServidor = Math.max(0, transferenciasPendentesServidor - 1);
       detalhesComandaAtual = snapshotOrigem;
@@ -2895,7 +3710,7 @@
       cacheDetalhesComandas[idOrigem] = JSON.parse(JSON.stringify(snapshotOrigem));
       renderizarDetalhesComanda();
       selecionarMesaComanda(mesaComandaSelecionada, false);
-      definirStatusSyncComanda('erro');
+      // definirStatusSyncComanda('erro');
       mostrarNotificacao((e && e.message ? e.message : 'Erro ao transferir item.') + ' A alteração foi desfeita na tela.', 'erro');
     }).transferirItemEntreComandas({ idItem: item.id, idComandaDestino: idDestino, quantidade: quantidade });
   }
@@ -2922,9 +3737,19 @@
       return String(c.id) === String(comanda.id);
     });
     if (indice >= 0) {
-      painelComandas.comandas[indice].total = Number(comanda.total || 0);
-      painelComandas.comandas[indice].status = comanda.status;
-    }
+
+    painelComandas.comandas[indice] = Object.assign(
+        {},
+        painelComandas.comandas[indice],
+        {
+            total: Number(comanda.total || 0),
+            status: comanda.status,
+            nomeCliente: comanda.nomeCliente,
+            numeroComanda: comanda.numeroComanda
+        }
+    );
+
+}
 
     const mesa = (painelComandas.mesas || []).find(function(m) {
       return Number(m.numero) === Number(comanda.mesa);
@@ -2941,9 +3766,9 @@
         : (mesa.abertas > 0 ? 'OCUPADA' : (mesa.emPagamento > 0 ? 'AGUARDANDO PAGAMENTO' : 'LIVRE'));
     }
 
-    renderizarMesasComandas();
-    if (mesaComandaSelecionada) selecionarMesaComanda(mesaComandaSelecionada, false);
-  }
+    if (mesaComandaSelecionada === Number(comanda.mesa)) {
+  selecionarMesaComanda(mesaComandaSelecionada, false);
+}
 
   function cancelarComandaAtual() {
     if (!detalhesComandaAtual || !idComandaSelecionada) return;
@@ -3232,12 +4057,1081 @@ let auditoriaCarregada = [];
     .finalizarVendaPDV({itens:carrinhoPDV,pagamentos:pagamentosPDV,idComanda:origemComandaPDV?origemComandaPDV.id:null});
   }
   function carregarComandaNoPDV(comanda){
-    origemComandaPDV={id:comanda.id,mesa:comanda.mesa,nomeCliente:comanda.nomeCliente||''};
+    origemComandaPDV={id:comanda.id,mesa:comanda.mesa,nomeCliente:comanda.nomeCliente||''};pagamentosPDV = [];
     carrinhoPDV=(comanda.itens||[]).map(function(i){return {idProduto:i.idProduto,nome:i.nomeProduto,tipoVenda:i.tipoVenda,quantidade:Number(i.quantidade||1),pesoKg:Number(i.pesoKg||0),precoUnitario:Number(i.precoUnitario||0),subtotal:Number(i.subtotal||0)};});
     atualizarOrigemPDV(); renderizarCarrinhoPDV(); abrirPagina('pdv',document.querySelector('.menu-item[onclick*="pdv"]'));
   }
   function atualizarOrigemPDV(){ const el=document.getElementById('pdv-origem'); if(!el)return; if(origemComandaPDV){el.textContent='🧾 Pagamento da Mesa '+String(origemComandaPDV.mesa).padStart(2,'0')+' · '+(origemComandaPDV.nomeCliente||'Comanda '+origemComandaPDV.id);el.classList.add('ativo');}else{el.textContent='';el.classList.remove('ativo');} }
 
+// ======================================================
+// HISTÓRICO DE VENDAS
+// BLOCO 3.1
+// ======================================================
+
+let historicoVendas = [];
+
+let historicoFiltrado = [];
+
+let historicoPaginaAtual = 1;
+
+const HISTORICO_ITENS_POR_PAGINA = 20;
+
+let historicoCarregando = false;
+
+
+// ------------------------------------------------------
+// INICIALIZAÇÃO
+// ------------------------------------------------------
+
+function inicializarHistorico() {
+
+  historicoPaginaAtual = 1;
+
+  historicoVendas = [];
+
+  historicoFiltrado = [];
+
+}
+
+
+// ------------------------------------------------------
+// CARREGAR HISTÓRICO
+// ------------------------------------------------------
+
+function carregarHistorico() {
+
+  if (historicoCarregando) {
+    return;
+  }
+
+  historicoCarregando = true;
+
+  limparTabelaHistorico();
+
+  atualizarCardsHistoricoVazio();
+
+  google.script.run
+
+    .withSuccessHandler(function(resultado){
+
+      historicoCarregando = false;
+
+      historicoVendas =
+
+        Array.isArray(resultado)
+        ? resultado
+        : [];
+
+      historicoFiltrado = [
+
+        ...historicoVendas
+
+      ];
+
+      renderizarHistorico();
+
+      atualizarCardsHistorico();
+
+      configurarFiltrosHistorico();
+
+    })
+
+    .withFailureHandler(function(erro){
+
+      historicoCarregando = false;
+
+      mostrarNotificacao(
+
+        erro.message || 'Erro ao carregar histórico.',
+
+        'erro'
+
+      );
+
+      limparTabelaHistoricoErro();
+
+    })
+
+    .buscarHistoricoVendas();
+
+}
+
+// ------------------------------------------------------
+// ERRO DE CARREGAMENTO
+// ------------------------------------------------------
+
+function limparTabelaHistoricoErro(){
+
+  const tabela =
+
+    document.getElementById(
+      'historico-tabela'
+    );
+
+  if(!tabela){
+    return;
+  }
+
+  tabela.innerHTML = `
+
+      <tr>
+
+          <td
+              colspan="8"
+              class="mensagem-vazia"
+          >
+
+              Não foi possível carregar o histórico.
+
+          </td>
+
+      </tr>
+
+  `;
+
+}
+
+// ------------------------------------------------------
+// CONFIGURAR FILTROS
+// ------------------------------------------------------
+
+let filtrosHistoricoConfigurados = false;
+
+function configurarFiltrosHistorico(){
+
+  if(filtrosHistoricoConfigurados){
+      return;
+  }
+
+  filtrosHistoricoConfigurados = true;
+
+  [
+
+    'historico-pesquisa',
+
+    'historico-origem',
+
+    'historico-pagamento',
+
+    'historico-data-inicial',
+
+    'historico-data-final'
+
+  ]
+
+  .forEach(function(id){
+
+      const elemento =
+
+        document.getElementById(id);
+
+      if(!elemento){
+          return;
+      }
+
+      elemento.addEventListener(
+
+          'input',
+
+          aplicarFiltrosHistorico
+
+      );
+
+      elemento.addEventListener(
+
+          'change',
+
+          aplicarFiltrosHistorico
+
+      );
+
+  });
+
+}
+
+
+
+
+// ------------------------------------------------------
+// LIMPAR TABELA
+// ------------------------------------------------------
+
+function limparTabelaHistorico() {
+
+  const tabela =
+    document.getElementById(
+      'historico-tabela'
+    );
+
+  if (!tabela) {
+    return;
+  }
+
+  tabela.innerHTML = `
+    <tr>
+
+      <td
+        colspan="8"
+        class="mensagem-vazia"
+      >
+
+        Carregando histórico...
+
+      </td>
+
+    </tr>
+  `;
+
+}
+
+
+// ------------------------------------------------------
+// CARDS VAZIOS
+// ------------------------------------------------------
+
+function atualizarCardsHistoricoVazio() {
+
+  definirTextoHistorico(
+    'historico-total-vendido',
+    'R$ 0,00'
+  );
+
+  definirTextoHistorico(
+    'historico-total-vendas',
+    '0'
+  );
+
+  definirTextoHistorico(
+    'historico-ticket-medio',
+    'R$ 0,00'
+  );
+
+  definirTextoHistorico(
+    'historico-total-comandas',
+    '0'
+  );
+
+}
+
+
+// ------------------------------------------------------
+// DEFINIR TEXTO
+// ------------------------------------------------------
+
+function definirTextoHistorico(
+  id,
+  valor
+) {
+
+  const elemento =
+    document.getElementById(id);
+
+  if (elemento) {
+    elemento.textContent = valor;
+  }
+
+}
+
+
+// ------------------------------------------------------
+// FILTROS
+// ------------------------------------------------------
+
+function aplicarFiltrosHistorico(){
+
+    historicoPaginaAtual = 1;
+
+    const pesquisa =
+
+        document
+        .getElementById('historico-pesquisa')
+        ?.value
+        .trim()
+        .toLowerCase();
+
+    const origem =
+
+        document
+        .getElementById('historico-origem')
+        ?.value;
+
+    const pagamento =
+
+        document
+        .getElementById('historico-pagamento')
+        ?.value;
+
+    const dataInicial =
+
+        document
+        .getElementById('historico-data-inicial')
+        ?.value;
+
+    const dataFinal =
+
+        document
+        .getElementById('historico-data-final')
+        ?.value;
+
+    historicoFiltrado =
+
+      historicoVendas.filter(function(venda){
+
+          if(pesquisa){
+
+              const textoPesquisa = [
+
+  venda.numero,
+  venda.cliente,
+  venda.mesa,
+  venda.origem,
+  venda.pagamento,
+  venda.status
+
+]
+.join(' ')
+.toLowerCase();
+
+if (!textoPesquisa.includes(pesquisa)) {
+  return false;
+}
+
+          }
+
+          if(origem){
+
+              if(venda.origem !== origem){
+
+                  return false;
+
+              }
+
+          }
+
+          if(pagamento){
+
+              if(
+                String(venda.pagamento)
+                .toUpperCase() !== pagamento
+              ){
+
+                  return false;
+
+              }
+
+          }
+
+          if(dataInicial){
+
+              if(
+                venda.dataISO &&
+                venda.dataISO < dataInicial
+              ){
+
+                  return false;
+
+              }
+
+          }
+
+          if(dataFinal){
+
+              if(
+                venda.dataISO &&
+                venda.dataISO > dataFinal
+              ){
+
+                  return false;
+
+              }
+
+          }
+
+          return true;
+
+      });
+
+    renderizarHistorico();
+
+    atualizarCardsHistorico();
+
+}
+
+// ------------------------------------------------------
+// RENDERIZAR HISTÓRICO
+// ------------------------------------------------------
+
+function renderizarHistorico() {
+
+  const tabela =
+    document.getElementById('historico-tabela');
+
+  if (!tabela) return;
+
+  tabela.innerHTML = '';
+
+  if (historicoFiltrado.length === 0) {
+
+    tabela.innerHTML = `
+
+      <tr>
+
+        <td colspan="8" class="mensagem-vazia">
+
+          Nenhuma venda encontrada.
+
+        </td>
+
+      </tr>
+
+    `;
+
+    atualizarPaginacaoHistorico();
+
+    return;
+
+  }
+
+  const inicio =
+    (historicoPaginaAtual - 1) *
+    HISTORICO_ITENS_POR_PAGINA;
+
+  const fim =
+    inicio +
+    HISTORICO_ITENS_POR_PAGINA;
+
+  historicoFiltrado
+    .slice(inicio, fim)
+    .forEach(renderizarLinhaHistorico);
+
+  atualizarPaginacaoHistorico();
+
+}
+
+// ------------------------------------------------------
+// LINHA DA TABELA
+// ------------------------------------------------------
+
+function renderizarLinhaHistorico(venda){
+
+    const tabela =
+      document.getElementById(
+        'historico-tabela'
+      );
+
+    const tr =
+      document.createElement('tr');
+
+    tr.innerHTML = `
+
+        <td>
+
+            ${venda.numero || '-'}
+
+        </td>
+
+        <td class="historico-data">
+
+            ${venda.dataHora || '-'}
+
+        </td>
+
+        <td class="historico-cliente">
+
+            ${venda.cliente || 'Consumidor'}
+
+        </td>
+
+        <td>
+
+    ${criarBadgeOrigem(venda)}
+
+</td>
+
+<td>
+
+    ${criarBadgePagamento(venda)}
+
+</td>
+
+        <td class="historico-total">
+
+            ${formatarMoeda(
+                Number(venda.total || 0)
+            )}
+
+        </td>
+
+        <td>
+
+            <div class="historico-acoes">
+
+                <button
+                    class="historico-btn historico-btn-visualizar"
+                    onclick="abrirDetalhesHistorico('${venda.id}')">
+
+                    👁
+
+                </button>
+
+                <button
+                    class="historico-btn historico-btn-imprimir"
+                    onclick="imprimirVendaHistorico('${venda.id}')">
+
+                    🖨
+
+                </button>
+
+            </div>
+
+        </td>
+
+    `;
+
+    tabela.appendChild(tr);
+
+}
+
+// ------------------------------------------------------
+// BADGE ORIGEM
+// ------------------------------------------------------
+
+function criarBadgeOrigem(venda){
+
+    const origem =
+      (venda.origem || '')
+      .toUpperCase();
+
+    if(origem === 'COMANDA'){
+
+        return `
+        <span class="historico-badge historico-origem-mesa">
+        🪑 ${venda.origemTexto || 'Comanda'}
+        </span>
+        `;
+
+    }
+
+    if(origem === 'PDV'){
+
+        return `
+        <span class="historico-badge historico-origem-balcao">
+        🛒 Balcão
+        </span>
+        `;
+
+    }
+
+    if(origem === 'DELIVERY'){
+
+        return `
+        <span class="historico-badge historico-origem-delivery">
+        🚚 Delivery
+        </span>
+        `;
+
+    }
+
+    if(origem === 'IFOOD'){
+
+        return `
+        <span class="historico-badge historico-origem-ifood">
+        🍔 iFood
+        </span>
+        `;
+
+    }
+
+    return origem;
+
+}
+
+// ------------------------------------------------------
+// BADGE PAGAMENTO
+// ------------------------------------------------------
+
+function criarBadgePagamento(venda){
+
+    const forma =
+      (venda.pagamento || '')
+      .toUpperCase();
+
+    let classe =
+      'pagamento-misto';
+
+    if(forma === 'PIX')
+      classe = 'pagamento-pix';
+
+    if(forma === 'DINHEIRO')
+      classe = 'pagamento-dinheiro';
+
+    if(forma === 'DÉBITO')
+      classe = 'pagamento-debito';
+
+    if(forma === 'CREDITO')
+      classe = 'pagamento-credito';
+
+    if(forma === 'CRÉDITO')
+      classe = 'pagamento-credito';
+
+    return `
+
+        <span class="historico-pagamento ${classe}">
+
+            ${forma}
+
+        </span>
+
+    `;
+
+}
+
+// ------------------------------------------------------
+// PAGINAÇÃO
+// ------------------------------------------------------
+
+function atualizarPaginacaoHistorico(){
+
+    const totalPaginas =
+
+      Math.max(
+
+        1,
+
+        Math.ceil(
+
+          historicoFiltrado.length /
+
+          HISTORICO_ITENS_POR_PAGINA
+
+        )
+
+      );
+
+    if(
+
+      historicoPaginaAtual >
+
+      totalPaginas
+
+    ){
+
+        historicoPaginaAtual =
+
+          totalPaginas;
+
+    }
+
+}
+
+// ------------------------------------------------------
+// ATUALIZAR CARDS
+// ------------------------------------------------------
+
+function atualizarCardsHistorico() {
+
+  const vendas = historicoFiltrado;
+
+  let totalVendido = 0;
+
+  let totalComandas = 0;
+
+  let pix = 0;
+  let dinheiro = 0;
+  let cartao = 0;
+
+  vendas.forEach(function(venda){
+
+    totalVendido += Number(venda.total || 0);
+
+    if(
+      String(venda.origem || '')
+      .toUpperCase() === 'COMANDA'
+    ){
+      totalComandas++;
+    }
+
+    const pagamento =
+      String(venda.pagamento || '')
+      .toUpperCase();
+
+    if(pagamento === 'PIX'){
+      pix++;
+    }
+
+    if(pagamento === 'DINHEIRO'){
+      dinheiro++;
+    }
+
+    if(
+      pagamento === 'CRÉDITO' ||
+      pagamento === 'CREDITO' ||
+      pagamento === 'DÉBITO' ||
+      pagamento === 'DEBITO'
+    ){
+      cartao++;
+    }
+
+  });
+
+  const quantidade = vendas.length;
+
+  const ticket =
+    quantidade > 0
+      ? totalVendido / quantidade
+      : 0;
+
+  definirTextoHistorico(
+    'historico-total-vendido',
+    formatarMoeda(totalVendido)
+  );
+
+  definirTextoHistorico(
+    'historico-total-vendas',
+    quantidade
+  );
+
+  definirTextoHistorico(
+    'historico-ticket-medio',
+    formatarMoeda(ticket)
+  );
+
+  definirTextoHistorico(
+    'historico-total-comandas',
+    totalComandas
+  );
+
+  atualizarResumoPagamentos(
+    pix,
+    cartao,
+    dinheiro,
+    quantidade
+  );
+
+}
+
+// ------------------------------------------------------
+// RESUMO DOS PAGAMENTOS
+// ------------------------------------------------------
+
+function atualizarResumoPagamentos(
+
+    pix,
+
+    cartao,
+
+    dinheiro,
+
+    total
+
+){
+
+    const elemento =
+      document.getElementById(
+        'historico-formas'
+      );
+
+    if(!elemento){
+        return;
+    }
+
+    const percentual = valor =>
+
+        total
+          ? ((valor * 100) / total).toFixed(1)
+          : '0.0';
+
+    elemento.innerHTML = `
+
+        PIX — ${percentual(pix)}%
+
+        <br>
+
+        Cartão — ${percentual(cartao)}%
+
+        <br>
+
+        Dinheiro — ${percentual(dinheiro)}%
+
+    `;
+
+}
+
+// ------------------------------------------------------
+// DETALHES DA VENDA
+// ------------------------------------------------------
+
+function abrirDetalhesHistorico(id){
+
+    const venda = historicoVendas.find(v => String(v.id) === String(id));
+
+    if(!venda){
+
+        mostrarNotificacao("Venda não encontrada.","erro");
+
+        return;
+
+    }
+
+    const resumo = document.getElementById("historicoResumo");
+    const itens = document.getElementById("historicoItens");
+
+    resumo.innerHTML = "";
+    itens.innerHTML = "";
+
+    const dados = [
+
+        ["Venda", venda.numero || "-"],
+        ["Status", venda.status || "Finalizada"],
+        ["Origem", venda.origem || "-"],
+        ["Mesa", venda.mesa || "-"],
+        ["Comanda", venda.comanda || "-"],
+        ["Cliente", venda.cliente || "-"],
+        ["Atendente", venda.atendente || "-"],
+        ["Pagamento", venda.pagamento || "-"],
+        ["Data", venda.data || "-"],
+        ["Total", formatarMoeda(venda.total || 0)]
+
+    ];
+
+    dados.forEach(campo=>{
+
+        resumo.innerHTML += `
+
+        <div class="historico-resumo-card">
+
+            <div class="historico-resumo-titulo">
+
+                ${campo[0]}
+
+            </div>
+
+            <div class="historico-resumo-valor">
+
+                ${campo[1]}
+
+            </div>
+
+        </div>
+
+        `;
+
+    });
+
+    (venda.itens || []).forEach(item=>{
+
+        itens.innerHTML += `
+
+        <tr>
+
+            <td class="historico-produto">
+
+                ${item.nome}
+
+            </td>
+
+            <td class="historico-qtd">
+
+                ${item.quantidade}
+
+            </td>
+
+            <td class="historico-valor">
+
+                ${formatarMoeda(item.valor)}
+
+            </td>
+
+            <td class="historico-subtotal">
+
+                ${formatarMoeda(item.valor * item.quantidade)}
+
+            </td>
+
+        </tr>
+
+        `;
+
+    });
+
+    document.getElementById("btnImprimirHistorico").onclick = function(){
+
+        imprimirVendaHistorico(id);
+
+    };
+
+    document
+        .getElementById("modalHistorico")
+        .classList
+        .add("ativo");
+
+}
+
+function fecharModalHistorico(){
+
+    document
+        .getElementById("modalHistorico")
+        .classList
+        .remove("ativo");
+
+}
+
+// ------------------------------------------------------
+// IMPRIMIR VENDA
+// ------------------------------------------------------
+
+function imprimirVendaHistorico(id){
+
+    const venda = historicoVendas.find(function(v){
+
+        return String(v.id) === String(id);
+
+    });
+
+    if(!venda){
+
+        mostrarNotificacao(
+
+            'Venda não encontrada.',
+
+            'erro'
+
+        );
+
+        return;
+
+    }
+
+    let html = '';
+
+    html += `
+    <html>
+
+    <head>
+
+        <title>Comprovante</title>
+
+        <style>
+
+            body{
+
+                font-family:Arial;
+
+                padding:20px;
+
+            }
+
+            h2{
+
+                margin-bottom:15px;
+
+            }
+
+            table{
+
+                width:100%;
+
+                border-collapse:collapse;
+
+            }
+
+            td{
+
+                padding:6px 0;
+
+            }
+
+            hr{
+
+                margin:15px 0;
+
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <h2>Lua de Sorvete</h2>
+
+        <p><strong>Venda:</strong> ${venda.numero || '-'}</p>
+
+        <p><strong>Cliente:</strong> ${venda.cliente || 'Consumidor'}</p>
+
+        <p><strong>Data:</strong> ${venda.dataHora || '-'}</p>
+
+        <hr>
+
+    `;
+
+    if(Array.isArray(venda.itens)){
+
+        venda.itens.forEach(function(item){
+
+            html += `
+
+                <p>
+
+                    ${item.quantidade} x
+
+                    ${item.nome}
+
+                    - ${formatarMoeda(
+
+                        Number(item.subtotal || 0)
+
+                    )}
+
+                </p>
+
+            `;
+
+        });
+
+    }
+
+    html += `
+
+        <hr>
+
+        <h3>
+
+            Total:
+
+            ${formatarMoeda(
+
+                Number(venda.total || 0)
+
+            )}
+
+        </h3>
+
+    </body>
+
+    </html>
+
+    `;
+
+    const janela = window.open('', '_blank');
+
+    janela.document.write(html);
+
+    janela.document.close();
+
+    janela.print();
+
+}
+
+// ------------------------------------------------------
+// ATUALIZAR
+// ------------------------------------------------------
+
+function atualizarHistorico() {
+
+  carregarHistorico();
+
+}
 
   function abrirPagina(pagina, elementoMenu) {
 
@@ -3275,6 +5169,9 @@ let auditoriaCarregada = [];
   if (pagina === 'dashboard') {
     carregarDashboard();
   }
+  if (pagina === 'historico') {
+  carregarHistorico();
+}
 
  if (pagina === 'produtos') {
 
@@ -3556,6 +5453,14 @@ let auditoriaCarregada = [];
 
 
   function carregarProdutos() {
+    // Utiliza o cache se ele ainda estiver válido
+if (
+  produtosCarregados.length > 0 &&
+  (Date.now() - ultimaAtualizacaoProdutos) < TEMPO_CACHE_PRODUTOS
+) {
+  renderizarProdutos(produtosCarregados);
+  return;
+}
 
     const corpoTabela =
       document.getElementById('lista-produtos');
@@ -7068,5 +8973,125 @@ function escaparSeletorFinanceiro(valor) {
   };
 })();
 </script>
+<!-- =====================================================
+     MODAL - DETALHES DA VENDA
+===================================================== -->
+
+<div
+    id="modalHistorico"
+    class="modal-overlay"
+>
+
+    <div
+        class="modal-conteudo"
+        style="max-width:900px;"
+    >
+
+        <div class="modal-cabecalho">
+
+            <h2>
+                Detalhes da Venda
+            </h2>
+
+            <button
+                class="modal-fechar"
+                onclick="fecharModalHistorico()"
+            >
+                ✕
+            </button>
+
+        </div>
+
+        <div class="modal-corpo">
+
+            <div
+                id="historicoResumo"
+                class="detalhes-resumo"
+            >
+
+            </div>
+
+            <div class="comparacao-auditoria">
+
+                <h3>
+
+                    Produtos
+
+                </h3>
+
+                <div class="tabela-container">
+
+                    <table
+                        class="tabela-alteracoes"
+                    >
+
+                        <thead>
+
+                            <tr>
+
+                                <th>Produto</th>
+
+                                <th>Qtd</th>
+
+                                <th>Valor</th>
+
+                                <th>Subtotal</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody
+                            id="historicoItens"
+                        >
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+            <div
+                style="
+                display:flex;
+                justify-content:flex-end;
+                gap:10px;
+                margin-top:20px;
+                "
+            >
+
+                <button
+
+                    class="btn btn-secundario"
+
+                    onclick="fecharModalHistorico()"
+
+                >
+
+                    Fechar
+
+                </button>
+
+                <button
+
+                    class="btn btn-primario"
+
+                    id="btnImprimirHistorico"
+
+                >
+
+                    🖨 Imprimir
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
 </body>
 </html>
