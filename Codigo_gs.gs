@@ -530,6 +530,344 @@ function alterarStatusProduto(idProduto) {
   throw new Error('Produto não encontrado.');
 }
   
+// ======================================================
+// MÓDULO HISTÓRICO DE VENDAS
+// ======================================================
+
+/**
+ * Retorna a aba Vendas.
+ */
+function obterAbaVendas() {
+
+  const planilha = getBancoDeDados();
+
+  const aba = planilha.getSheetByName('Vendas');
+
+  if (!aba) {
+    throw new Error('A aba Vendas não foi encontrada.');
+  }
+
+  return aba;
+
+}
+
+
+/**
+ * Retorna a aba Itens_Venda.
+ */
+function obterAbaItensVenda() {
+
+  const planilha = getBancoDeDados();
+
+  const aba = planilha.getSheetByName('Itens_Venda');
+
+  if (!aba) {
+    throw new Error('A aba Itens_Venda não foi encontrada.');
+  }
+
+  return aba;
+
+}
+
+
+/**
+ * Lê todas as vendas cadastradas.
+ */
+function listarVendasHistorico() {
+
+  const aba = obterAbaVendas();
+
+  if (aba.getLastRow() < 2) {
+    return [];
+  }
+
+  const dados = aba
+  .getRange(
+      2,
+      1,
+      aba.getLastRow() - 1,
+      VENDAS_CABECALHOS.length
+  )
+  .getValues();
+
+  return dados.map(function(linha){
+
+    return {
+
+  id: String(linha[0] || ''),
+
+  numero: String(linha[1] || ''),
+
+  dataHora: linha[2],
+
+  cliente: String(linha[3] || ''),
+
+  origem: String(linha[4] || '').toUpperCase(),
+
+  mesa: linha[5],
+
+  subtotal: Number(linha[6] || 0),
+
+  desconto: Number(linha[7] || 0),
+
+  total: Number(linha[8] || 0),
+
+  pagamento: String(linha[9] || '').toUpperCase(),
+
+  status: String(linha[10] || 'FINALIZADA').toUpperCase(),
+
+  observacoes: String(linha[11] || '')
+
+};
+
+  });
+
+}
+
+
+/**
+ * Lê todos os itens vendidos.
+ */
+function listarItensHistorico() {
+
+  const aba = obterAbaItensVenda();
+
+  if (aba.getLastRow() < 2) {
+    return [];
+  }
+
+  const dados = aba
+    .getRange(
+      2,
+      1,
+      aba.getLastRow() - 1,
+      10
+    )
+    .getValues();
+
+  return dados.map(function(linha){
+
+    return {
+
+      id: String(linha[0] || ''),
+
+      idVenda: String(linha[1] || ''),
+
+      idProduto: String(linha[2] || ''),
+
+      produto: String(linha[3] || ''),
+
+      tipo: String(linha[4] || ''),
+
+      quantidade: Number(linha[5] || 0),
+
+      pesoKg: Number(linha[6] || 0),
+
+      precoUnitario: Number(linha[7] || 0),
+
+      precoKg: Number(linha[8] || 0),
+
+      subtotal: Number(linha[9] || 0)
+
+    };
+
+  });
+
+}
+
+/**
+ * Monta o histórico completo das vendas.
+ */
+function listarHistorico() {
+
+  const vendas = listarVendasHistorico();
+  const itens = listarItensHistorico();
+
+  const historico = vendas.map(function(venda){
+
+    const itensVenda = itens
+      .filter(function(item){
+        return String(item.idVenda) === String(venda.id);
+      })
+      .map(function(item){
+
+        return {
+
+          id: item.id,
+          nome: item.produto,
+          quantidade: Number(item.quantidade || 0),
+          pesoKg: Number(item.pesoKg || 0),
+          tipo: item.tipo,
+          valor:
+            item.tipo === 'PESO'
+              ? Number(item.precoKg || 0)
+              : Number(item.precoUnitario || 0),
+          subtotal: Number(item.subtotal || 0)
+
+        };
+
+      });
+
+    //--------------------------------------------------
+    // DATA
+    //--------------------------------------------------
+
+    let dataVenda = venda.dataHora;
+
+    if (!(dataVenda instanceof Date)) {
+      dataVenda = new Date(dataVenda);
+    }
+
+    const dataValida =
+      dataVenda instanceof Date &&
+      !isNaN(dataVenda.getTime());
+
+    //--------------------------------------------------
+    // CLIENTE
+    //--------------------------------------------------
+
+    let cliente = "-";
+
+    if (venda.cliente && String(venda.cliente).trim() !== "") {
+
+      cliente = venda.cliente;
+
+    } else if (venda.origem === "COMANDA") {
+
+      if (venda.mesa) {
+
+        cliente = "Mesa " + venda.mesa;
+
+      } else {
+
+        cliente = "Comanda";
+
+      }
+
+    }
+
+    //--------------------------------------------------
+    // ORIGEM
+    //--------------------------------------------------
+
+    let origem = "Balcão";
+
+    switch (String(venda.origem || "").toUpperCase()) {
+
+      case "COMANDA":
+        origem = venda.mesa
+          ? "Mesa " + venda.mesa
+          : "Comanda";
+        break;
+
+      case "BALCAO":
+        origem = "Balcão";
+        break;
+
+      case "DELIVERY":
+        origem = "Delivery";
+        break;
+
+      case "IFOOD":
+        origem = "iFood";
+        break;
+
+      case "RETIRADA":
+        origem = "Retirada";
+        break;
+
+    }
+
+    //--------------------------------------------------
+    // PAGAMENTO
+    //--------------------------------------------------
+
+    const pagamento = String(
+      venda.pagamento || ""
+    ).toUpperCase();
+
+    //--------------------------------------------------
+    // OBJETO FINAL
+    //--------------------------------------------------
+
+    return {
+
+      id: venda.id,
+
+      numero:
+        venda.numero ||
+        "#" + String(venda.id).substring(0,6),
+
+      dataHora:
+
+        dataValida
+
+          ? Utilities.formatDate(
+              dataVenda,
+              Session.getScriptTimeZone(),
+              "dd/MM/yyyy HH:mm"
+            )
+
+          : "",
+
+      dataOrdenacao:
+
+        dataValida
+
+          ? dataVenda.getTime()
+
+          : 0,
+
+      cliente: cliente,
+
+      origem: origem,
+
+      tipo: venda.origem,
+
+      pagamento: pagamento,
+
+      status: venda.status || "FINALIZADA",
+
+      subtotal: Number(venda.subtotal || 0),
+
+      desconto: Number(venda.desconto || 0),
+
+      total: Number(venda.total || 0),
+
+      observacoes: venda.observacoes || "",
+
+      mesa: venda.mesa || "",
+
+      atendente: "",
+
+      itens: itensVenda
+
+    };
+
+  });
+
+  //--------------------------------------------------
+  // ORDENAÇÃO
+  //--------------------------------------------------
+
+  historico.sort(function(a,b){
+
+    return b.dataOrdenacao - a.dataOrdenacao;
+
+  });
+
+  return historico;
+
+}
+/**
+ * Função utilizada pelo Index.html.
+ * Apenas encaminha para listarHistorico().
+ */
+function buscarHistoricoVendas() {
+
+  return listarHistorico();
+
+}
 
 
   // ======================================================
@@ -1696,8 +2034,15 @@ function converterLinhaFinanceiroEmObjeto(linha) {
 // COMANDAS - MESAS, COMANDAS E ITENS
 // ======================================================
 const COMANDAS_CABECALHOS = [
-  'ID_COMANDA','MESA','NOME_CLIENTE','STATUS','CRIADO_EM',
-  'ATUALIZADO_EM','USUARIO','ATIVO'
+  'ID_COMANDA',
+  'MESA',
+  'NOME_CLIENTE',
+  'NUMERO_COMANDA',
+  'STATUS',
+  'CRIADO_EM',
+  'ATUALIZADO_EM',
+  'USUARIO',
+  'ATIVO'
 ];
 
 const ITENS_COMANDA_CABECALHOS = [
@@ -1706,34 +2051,81 @@ const ITENS_COMANDA_CABECALHOS = [
 ];
 
 function garantirEstruturaComandas() {
+
   const planilha = getBancoDeDados();
 
   let abaComandas = planilha.getSheetByName('Comandas');
+
   if (!abaComandas) {
+
     abaComandas = planilha.insertSheet('Comandas');
-    abaComandas.getRange(1, 1, 1, COMANDAS_CABECALHOS.length)
+
+    abaComandas
+      .getRange(1,1,1,COMANDAS_CABECALHOS.length)
       .setValues([COMANDAS_CABECALHOS]);
+
     abaComandas.setFrozenRows(1);
+
+  } else {
+
+    const ultimaColuna = abaComandas.getLastColumn();
+
+    const cabecalhos = abaComandas
+      .getRange(1,1,1,ultimaColuna)
+      .getValues()[0];
+
+    if (cabecalhos.indexOf('NUMERO_COMANDA') === -1) {
+
+      // Insere a nova coluna depois de NOME_CLIENTE
+      abaComandas.insertColumnAfter(3);
+
+      abaComandas
+        .getRange(1,4)
+        .setValue('NUMERO_COMANDA');
+
+    }
+
+    // Garante que todos os cabeçalhos estejam corretos
+    abaComandas
+      .getRange(1,1,1,COMANDAS_CABECALHOS.length)
+      .setValues([COMANDAS_CABECALHOS]);
+
   }
 
   let abaItens = planilha.getSheetByName('Itens_Comanda');
+
   if (!abaItens) {
+
     abaItens = planilha.insertSheet('Itens_Comanda');
-    abaItens.getRange(1, 1, 1, ITENS_COMANDA_CABECALHOS.length)
+
+    abaItens
+      .getRange(1,1,1,ITENS_COMANDA_CABECALHOS.length)
       .setValues([ITENS_COMANDA_CABECALHOS]);
+
     abaItens.setFrozenRows(1);
+
   }
 
   const props = PropertiesService.getScriptProperties();
+
   if (!props.getProperty('TOTAL_MESAS')) {
-    props.setProperty('TOTAL_MESAS', '10');
+
+    props.setProperty('TOTAL_MESAS','10');
+
   }
 
   return {
+
     abaComandas: abaComandas,
+
     abaItens: abaItens,
-    totalMesas: Number(props.getProperty('TOTAL_MESAS') || 10)
+
+    totalMesas: Number(
+      props.getProperty('TOTAL_MESAS') || 10
+    )
+
   };
+
 }
 
 function listarPainelComandas() {
@@ -1746,14 +2138,15 @@ function listarPainelComandas() {
     const dados = aba.getRange(2, 1, ultimaLinha - 1, COMANDAS_CABECALHOS.length).getValues();
     comandas = dados.map(function(l) {
       return {
-        id: String(l[0] || ''),
-        mesa: Number(l[1] || 0),
-        nomeCliente: String(l[2] || ''),
-        status: String(l[3] || 'ABERTA').toUpperCase(),
-        criadoEm: l[4] instanceof Date ? l[4].toISOString() : String(l[4] || ''),
-        atualizadoEm: l[5] instanceof Date ? l[5].toISOString() : String(l[5] || ''),
-        ativo: l[7] === true || String(l[7]).toUpperCase() === 'TRUE'
-      };
+  id: String(l[0] || ''),
+  mesa: Number(l[1] || 0),
+  nomeCliente: String(l[2] || ''),
+  numeroComanda: Number(l[3] || 1),
+  status: String(l[4] || 'ABERTA').toUpperCase(),
+  criadoEm: l[5] instanceof Date ? l[5].toISOString() : String(l[5] || ''),
+  atualizadoEm: l[6] instanceof Date ? l[6].toISOString() : String(l[6] || ''),
+  ativo: l[8] === true || String(l[8]).toUpperCase() === 'TRUE'
+};
     }).filter(function(c) { return c.ativo && c.status !== 'FINALIZADA'; });
   }
 
@@ -1798,41 +2191,127 @@ function adicionarMesaComanda() {
 }
 
 function criarNovaComanda(mesa, nomeCliente) {
+
   const estrutura = garantirEstruturaComandas();
+
   mesa = Number(mesa || 0);
 
   if (!mesa || mesa < 1 || mesa > estrutura.totalMesas) {
     throw new Error('Selecione uma mesa válida.');
   }
 
-  const id = Utilities.getUuid();
   const agora = new Date();
   const usuario = Session.getActiveUser().getEmail() || 'Sistema';
 
+  // Lê todas as comandas
+  const ultimaLinha = estrutura.abaComandas.getLastRow();
+
+  let numeroComanda = 1;
+
+  if (ultimaLinha >= 2) {
+
+    const dados = estrutura.abaComandas
+      .getRange(2, 1, ultimaLinha - 1, COMANDAS_CABECALHOS.length)
+      .getValues();
+
+    const numerosEmUso = [];
+
+    dados.forEach(function(l) {
+
+      const mesmaMesa = Number(l[1]) === mesa;
+
+      const numero = Number(l[3] || 0);
+
+      const ativo =
+        l[8] === true ||
+        String(l[8]).toUpperCase() === 'TRUE';
+
+      if (mesmaMesa && ativo && numero > 0) {
+        numerosEmUso.push(numero);
+      }
+
+    });
+
+    while (numerosEmUso.includes(numeroComanda)) {
+      numeroComanda++;
+    }
+
+  }
+
+  const id = Utilities.getUuid();
+
   estrutura.abaComandas.appendRow([
-    id, mesa, String(nomeCliente || '').trim(), 'ABERTA',
-    agora, agora, usuario, true
+    id,
+    mesa,
+    String(nomeCliente || '').trim(),
+    numeroComanda,
+    'ABERTA',
+    agora,
+    agora,
+    usuario,
+    true
   ]);
 
   if (typeof registrarAuditoria === 'function') {
-    registrarAuditoria('Comandas', 'CADASTRO', id,
-      'Nova comanda aberta na Mesa ' + String(mesa).padStart(2, '0'),
-      '', JSON.stringify({ mesa: mesa, nomeCliente: String(nomeCliente || '').trim() }));
+
+    registrarAuditoria(
+      'Comandas',
+      'CADASTRO',
+      id,
+      'Nova comanda aberta',
+      '',
+      JSON.stringify({
+        mesa: mesa,
+        numeroComanda: numeroComanda,
+        nomeCliente: String(nomeCliente || '').trim()
+      })
+    );
+
   }
 
-  return { sucesso: true, id: id };
+  return {
+    sucesso: true,
+    id: id
+  };
+
 }
 
 function obterDetalhesComanda(idComanda) {
   const painel = listarPainelComandas();
-  const comanda = painel.comandas.find(function(c) { return c.id === String(idComanda); });
-  if (!comanda) throw new Error('Comanda não encontrada.');
+
+  const comanda = painel.comandas.find(function(c) {
+    return c.id === String(idComanda);
+  });
+
+  if (!comanda) {
+    throw new Error('Comanda não encontrada.');
+  }
+
+  // Calcula o número visual considerando TODAS as comandas da mesa
+const estrutura = garantirEstruturaComandas();
+
+const dadosComandas = estrutura.abaComandas
+  .getRange(
+    2,
+    1,
+    estrutura.abaComandas.getLastRow() - 1,
+    COMANDAS_CABECALHOS.length
+  )
+  .getValues();
+
+const linha = dadosComandas.find(function(l) {
+  return String(l[0]) === String(comanda.id);
+});
+
+comanda.numeroComanda = Number(linha[3] || 1);
+comanda.numeroVisual = String(comanda.numeroComanda).padStart(2, '0');
 
   const itens = listarTodosItensComanda_().filter(function(i) {
     return i.idComanda === String(idComanda) && i.ativo;
   });
 
   comanda.itens = itens;
+
   comanda.total = itens.reduce(function(soma, item) {
     return soma + Number(item.subtotal || 0);
   }, 0);
@@ -1967,114 +2446,202 @@ function removerItemComanda(idItem) {
 
 
 function transferirItemEntreComandas(dados) {
-  if (!dados || !dados.idItem || !dados.idComandaDestino) throw new Error('Dados da transferência incompletos.');
+
+  if (!dados) {
+    throw new Error('Dados não informados.');
+  }
+
+  if (!dados.idItem) {
+    throw new Error('Item não informado.');
+  }
+
+  if (!dados.idComandaDestino) {
+    throw new Error('Comanda de destino não informada.');
+  }
 
   const lock = LockService.getScriptLock();
-  lock.waitLock(20000);
+  lock.waitLock(30000);
+
   try {
+
     const estrutura = garantirEstruturaComandas();
     const abaItens = estrutura.abaItens;
-    const ultimaLinha = abaItens.getLastRow();
-    if (ultimaLinha < 2) throw new Error('Item não encontrado.');
 
-    const qtdColunas = ITENS_COMANDA_CABECALHOS.length;
-    const faixa = abaItens.getRange(2, 1, ultimaLinha - 1, qtdColunas);
-    const valores = faixa.getValues();
-    let indice = -1;
+    const ultimaLinha = abaItens.getLastRow();
+
+    if (ultimaLinha < 2) {
+      throw new Error('Nenhum item encontrado.');
+    }
+
+    const dadosItens = abaItens
+      .getRange(
+        2,
+        1,
+        ultimaLinha - 1,
+        ITENS_COMANDA_CABECALHOS.length
+      )
+      .getValues();
+
+    let indiceLinha = -1;
     let item = null;
 
-    for (let i = 0; i < valores.length; i++) {
-      const ativo = valores[i][10] === true || String(valores[i][10]).toUpperCase() === 'TRUE';
-      if (String(valores[i][0]) === String(dados.idItem) && ativo) {
-        indice = i;
-        item = valores[i].slice();
+    for (let i = 0; i < dadosItens.length; i++) {
+
+      const ativo =
+        dadosItens[i][10] === true ||
+        String(dadosItens[i][10]).toUpperCase() === 'TRUE';
+
+      if (
+        ativo &&
+        String(dadosItens[i][0]) === String(dados.idItem)
+      ) {
+
+        indiceLinha = i + 2; // Linha real da planilha
+        item = dadosItens[i];
         break;
       }
     }
-    if (!item) throw new Error('Item não encontrado ou já removido.');
 
-    const idOrigem = String(item[1]);
-    const idDestino = String(dados.idComandaDestino);
-    if (idOrigem === idDestino) throw new Error('Escolha outra comanda como destino.');
+    if (!item) {
+      throw new Error('Item não encontrado.');
+    }
 
-    const origemAntes = obterDetalhesComanda(idOrigem);
-    const destinoAntes = obterDetalhesComanda(idDestino);
-    if (Number(origemAntes.mesa) !== Number(destinoAntes.mesa)) throw new Error('A transferência só é permitida entre comandas da mesma mesa.');
-    if (origemAntes.status !== 'ABERTA' || destinoAntes.status !== 'ABERTA') throw new Error('As duas comandas precisam estar abertas para transferir itens.');
+    const idComandaOrigem = String(item[1]);
+    const idComandaDestino = String(dados.idComandaDestino);
 
-    const tipo = String(item[4] || '').toUpperCase();
-    const quantidadeAtual = Number(item[5] || 0);
-    const preco = Number(item[7] || 0);
+    if (idComandaOrigem === idComandaDestino) {
+      throw new Error(
+        'Selecione outra comanda para transferência.'
+      );
+    }
+
+    const origem = obterDetalhesComanda(idComandaOrigem);
+    const destino = obterDetalhesComanda(idComandaDestino);
+
+    if (origem.status !== 'ABERTA') {
+      throw new Error(
+        'A comanda de origem não está aberta.'
+      );
+    }
+
+    if (destino.status !== 'ABERTA') {
+      throw new Error(
+        'A comanda de destino não está aberta.'
+      );
+    }
+
+    if (Number(origem.mesa) !== Number(destino.mesa)) {
+      throw new Error(
+        'Só é permitido transferir entre comandas da mesma mesa.'
+      );
+    }
+
+    const tipoVenda =
+      String(item[4]).toUpperCase();
+
+    const preco =
+      Number(item[7] || 0);
+
+    const quantidadeAtual =
+      Number(item[5] || 0);
+
+    const pesoAtual =
+      Number(item[6] || 0);
+          let transferenciaParcial = false;
     let quantidadeTransferida = quantidadeAtual;
-    let transferenciaParcial = false;
 
-    if (tipo !== 'PESO' && dados.quantidade !== null && dados.quantidade !== undefined && dados.quantidade !== '') {
-      quantidadeTransferida = Number(dados.quantidade);
-      if (!Number.isInteger(quantidadeTransferida) || quantidadeTransferida < 1 || quantidadeTransferida > quantidadeAtual) {
-        throw new Error('Quantidade inválida para transferência.');
+    if (tipoVenda !== 'PESO') {
+
+      quantidadeTransferida = Number(
+        dados.quantidade || quantidadeAtual
+      );
+
+      if (
+        !Number.isInteger(quantidadeTransferida) ||
+        quantidadeTransferida < 1
+      ) {
+        throw new Error(
+          'Quantidade inválida para transferência.'
+        );
       }
-      transferenciaParcial = quantidadeTransferida < quantidadeAtual;
+
+      if (quantidadeTransferida > quantidadeAtual) {
+        throw new Error(
+          'Quantidade maior que a disponível.'
+        );
+      }
+
+      transferenciaParcial =
+        quantidadeTransferida < quantidadeAtual;
     }
 
     let idItemDestino = String(item[0]);
 
-    if (tipo === 'PESO' || !transferenciaParcial) {
-      // V4.3: grava a linha inteira de uma vez, alterando somente o ID_COMANDA.
-      // Isso evita uma atualização parcial da linha e facilita a confirmação real da transferência.
-      item[1] = idDestino;
-      abaItens.getRange(indice + 2, 1, 1, qtdColunas).setValues([item]);
+    if (tipoVenda === 'PESO' || !transferenciaParcial) {
+
+      // Transfere o item inteiro
+      abaItens
+        .getRange(indiceLinha, 2)
+        .setValue(idComandaDestino);
+
     } else {
-      const restante = quantidadeAtual - quantidadeTransferida;
-      const linhaOrigem = item.slice();
-      linhaOrigem[5] = restante;
-      linhaOrigem[8] = Math.round(restante * preco * 100) / 100;
-      abaItens.getRange(indice + 2, 1, 1, qtdColunas).setValues([linhaOrigem]);
 
+      // Atualiza o restante na origem
+      const quantidadeRestante =
+        quantidadeAtual - quantidadeTransferida;
+
+      abaItens
+        .getRange(indiceLinha, 6)
+        .setValue(quantidadeRestante);
+
+      abaItens
+        .getRange(indiceLinha, 10)
+        .setValue(
+          Math.round(
+            quantidadeRestante *
+            preco *
+            100
+          ) / 100
+        );
+
+      // Cria novo item na comanda destino
       idItemDestino = Utilities.getUuid();
-      const linhaDestino = [
-        idItemDestino, idDestino, String(item[2]), String(item[3]), tipo,
-        quantidadeTransferida, 0, preco,
-        Math.round(quantidadeTransferida * preco * 100) / 100,
-        new Date(), true
-      ];
-      abaItens.appendRow(linhaDestino);
+
+      abaItens.appendRow([
+        idItemDestino,
+        idComandaDestino,
+        item[2],
+        item[3],
+        item[4],
+        quantidadeTransferida,
+        0,
+        preco,
+        item[8],
+        Math.round(
+          quantidadeTransferida *
+          preco *
+          100
+        ) / 100,
+        true
+      ]);
     }
 
-    atualizarDataComanda_(idOrigem);
-    atualizarDataComanda_(idDestino);
     SpreadsheetApp.flush();
-
-    // Confirma diretamente na planilha, sem depender de cache ou resumo de painel.
-    const ultimaLinhaDepois = abaItens.getLastRow();
-    const dadosDepois = abaItens.getRange(2, 1, ultimaLinhaDepois - 1, qtdColunas).getValues();
-    const linhaConfirmadaDestino = dadosDepois.find(function(l) {
-      const ativo = l[10] === true || String(l[10]).toUpperCase() === 'TRUE';
-      return ativo && String(l[0]) === String(idItemDestino) && String(l[1]) === idDestino;
-    });
-    if (!linhaConfirmadaDestino) {
-      throw new Error('A transferência não foi gravada na comanda de destino.');
-    }
-
-    const origemDepois = obterDetalhesComanda(idOrigem);
-    const destinoDepois = obterDetalhesComanda(idDestino);
-
-    if (typeof registrarAuditoria === 'function') {
-      registrarAuditoria('Comandas', 'TRANSFERENCIA', String(dados.idItem),
-        'Item transferido entre comandas da Mesa ' + String(origemAntes.mesa).padStart(2, '0'),
-        JSON.stringify({ idComanda: idOrigem, nomeCliente: origemAntes.nomeCliente, quantidade: quantidadeAtual }),
-        JSON.stringify({ idComanda: idDestino, nomeCliente: destinoAntes.nomeCliente, quantidadeTransferida: tipo === 'PESO' ? null : quantidadeTransferida, pesoKg: tipo === 'PESO' ? Number(item[6] || 0) : null, produto: String(item[3]) })
-      );
-    }
+    Logger.log("===== TESTE TRANSFERÊNCIA =====");
+Logger.log("Linha: " + indiceLinha);
+Logger.log("Destino: " + idComandaDestino);
+Logger.log("Valor coluna B: " + abaItens.getRange(indiceLinha, 2).getValue());
+        const origemDepois = obterDetalhesComanda(idComandaOrigem);
+    const destinoDepois = obterDetalhesComanda(idComandaDestino);
 
     return {
       sucesso: true,
       confirmado: true,
-      idOrigem: idOrigem,
-      idDestino: idDestino,
       idItemDestino: idItemDestino,
       origem: origemDepois,
       destino: destinoDepois
     };
+
   } finally {
     lock.releaseLock();
   }
@@ -2096,9 +2663,14 @@ function cancelarComanda(idComanda) {
     if (String(dados[i][0]) === String(idComanda)) {
       linhaComanda = i + 2;
       mesa = Number(dados[i][1] || 0);
-      nomeCliente = String(dados[i][2] || '');
-      const status = String(dados[i][3] || '').toUpperCase();
-      if (status !== 'ABERTA') throw new Error('Somente comandas abertas podem ser canceladas.');
+nomeCliente = String(dados[i][2] || '');
+
+// A coluna STATUS agora é a posição 4
+const status = String(dados[i][4] || '').trim().toUpperCase();
+
+if (status !== 'ABERTA') {
+  throw new Error('Somente comandas abertas podem ser canceladas.');
+}
       break;
     }
   }
@@ -2157,8 +2729,8 @@ function enviarComandaParaPagamento(idComanda) {
     const dados = aba.getRange(2, 1, ultimaLinha - 1, COMANDAS_CABECALHOS.length).getValues();
     for (let i = 0; i < dados.length; i++) {
       if (String(dados[i][0]) === String(idComanda)) {
-        aba.getRange(i + 2, 4).setValue('AGUARDANDO PAGAMENTO');
-        aba.getRange(i + 2, 6).setValue(new Date());
+        aba.getRange(i + 2, 5).setValue('AGUARDANDO PAGAMENTO');
+        aba.getRange(i + 2, 7).setValue(new Date());
         SpreadsheetApp.flush();
 
         // Releitura final do servidor: o PDV recebe somente os dados persistidos.
@@ -2179,15 +2751,138 @@ function enviarComandaParaPagamento(idComanda) {
 // ======================================================
 // PDV - VENDAS, ITENS E PAGAMENTOS
 // ======================================================
-const VENDAS_CABECALHOS = ['ID_VENDA','DATA_HORA','ORIGEM','ID_COMANDA','MESA','NOME_CLIENTE','TOTAL','STATUS','USUARIO'];
+const VENDAS_CABECALHOS = [
+
+  'ID_VENDA',
+
+  'NUMERO_VENDA',
+
+  'DATA_HORA',
+
+  'CLIENTE',
+
+  'ORIGEM',
+
+  'MESA',
+
+  'SUBTOTAL',
+
+  'DESCONTO',
+
+  'TOTAL',
+
+  'FORMA_PAGAMENTO',
+
+  'STATUS',
+
+  'OBSERVACOES'
+
+];
 const ITENS_VENDA_CABECALHOS = ['ID_ITEM','ID_VENDA','ID_PRODUTO','NOME_PRODUTO','TIPO_VENDA','QUANTIDADE','PESO_KG','PRECO_UNITARIO','SUBTOTAL'];
 const PAGAMENTOS_VENDA_CABECALHOS = ['ID_PAGAMENTO','ID_VENDA','FORMA','VALOR','DATA_HORA'];
 
-function garantirEstruturaVendas_(){
-  const p=getBancoDeDados();
-  function aba(nome,cab){let a=p.getSheetByName(nome);if(!a){a=p.insertSheet(nome);a.getRange(1,1,1,cab.length).setValues([cab]);a.setFrozenRows(1);}return a;}
-  return {vendas:aba('Vendas',VENDAS_CABECALHOS),itens:aba('Itens_Venda',ITENS_VENDA_CABECALHOS),pagamentos:aba('Pagamentos_Venda',PAGAMENTOS_VENDA_CABECALHOS)};
+function gerarNumeroVenda_(abaVendas) {
+
+  const ultimaLinha = abaVendas.getLastRow();
+
+  // Primeira venda do sistema
+  if (ultimaLinha <= 1) {
+    return "#000001";
+  }
+
+  const ultimoNumero = abaVendas
+    .getRange(ultimaLinha, 2)
+    .getDisplayValue()
+    .toString()
+    .trim();
+
+  if (!ultimoNumero) {
+    return "#" + String(ultimaLinha - 1).padStart(6, "0");
+  }
+
+  const numero = Number(
+    ultimoNumero.replace("#", "")
+  );
+
+  return "#" + String(numero + 1).padStart(6, "0");
+
 }
+
+function garantirEstruturaVendas_() {
+
+  const planilha = getBancoDeDados();
+
+  function garantirAba(nome, cabecalhos) {
+
+    let aba = planilha.getSheetByName(nome);
+
+    if (!aba) {
+
+      aba = planilha.insertSheet(nome);
+
+      aba.getRange(1, 1, 1, cabecalhos.length)
+        .setValues([cabecalhos]);
+
+      aba.setFrozenRows(1);
+
+      return aba;
+    }
+
+    const cabecalhosExistentes = aba
+      .getRange(1, 1, 1, aba.getLastColumn())
+      .getValues()[0];
+
+    cabecalhos.forEach(function (cabecalho, indice) {
+
+      if (cabecalhosExistentes[indice] !== cabecalho) {
+
+        aba.getRange(1, indice + 1).setValue(cabecalho);
+
+      }
+
+    });
+
+    if (aba.getLastColumn() < cabecalhos.length) {
+
+      aba.insertColumnsAfter(
+        aba.getLastColumn(),
+        cabecalhos.length - aba.getLastColumn()
+      );
+
+      aba.getRange(
+        1,
+        1,
+        1,
+        cabecalhos.length
+      ).setValues([cabecalhos]);
+
+    }
+
+    return aba;
+
+  }
+
+  return {
+
+    vendas: garantirAba(
+      'Vendas',
+      VENDAS_CABECALHOS
+    ),
+
+    itens: garantirAba(
+      'Itens_Venda',
+      ITENS_VENDA_CABECALHOS
+    ),
+
+    pagamentos: garantirAba(
+      'Pagamentos_Venda',
+      PAGAMENTOS_VENDA_CABECALHOS
+    )
+
+  };
+
+}
+
 
 function finalizarVendaPDV(dados){
   if(!dados||!dados.itens||!dados.itens.length) throw new Error('A venda não possui itens.');
@@ -2201,15 +2896,90 @@ function finalizarVendaPDV(dados){
     if(informado>total+0.005&&!temDinheiro) throw new Error('Valor acima do total só é permitido quando há pagamento em dinheiro para troco.');
     let comanda=null;
     if(dados.idComanda){ comanda=obterDetalhesComanda(dados.idComanda); if(comanda.status!=='AGUARDANDO PAGAMENTO') throw new Error('A comanda não está aguardando pagamento.'); }
-    const e=garantirEstruturaVendas_(), agora=new Date(), id='V'+Utilities.formatDate(agora,Session.getScriptTimeZone(),'yyyyMMddHHmmss')+Math.floor(Math.random()*900+100);
-    e.vendas.appendRow([id,agora,comanda?'COMANDA':'BALCAO',comanda?comanda.id:'',comanda?comanda.mesa:'',comanda?comanda.nomeCliente:'',total,'FINALIZADA','']);
-    const linhasItens=dados.itens.map(function(i){return [Utilities.getUuid(),id,String(i.idProduto||''),String(i.nome||i.nomeProduto||''),String(i.tipoVenda||''),Number(i.quantidade||0),Number(i.pesoKg||0),Number(i.precoUnitario||0),Number(i.subtotal||0)];});
+    const e = garantirEstruturaVendas_();
+const agora = new Date();
+
+const id =
+  'V' +
+  Utilities.formatDate(
+    agora,
+    Session.getScriptTimeZone(),
+    'yyyyMMddHHmmss'
+  ) +
+  Math.floor(Math.random() * 900 + 100);
+
+const numeroVenda = gerarNumeroVenda_(e.vendas);
+    const formaPagamento =
+  dados.pagamentos.length === 1
+    ? String(dados.pagamentos[0].forma || '')
+    : 'MISTO';
+
+const subtotal = total;
+const desconto = Number(dados.desconto || 0);
+
+e.vendas.appendRow([
+
+  id,
+
+  numeroVenda,
+
+  agora,
+
+  comanda
+? (
+    comanda.nomeCliente ||
+    ('Comanda ' + String(comanda.numeroComanda).padStart(2,'0'))
+  )
+  : String(dados.nomeCliente || 'Balcão'),
+
+  comanda ? 'COMANDA' : 'PDV',
+
+  comanda ? comanda.mesa : '',
+
+  subtotal,
+
+  desconto,
+
+  total,
+
+  formaPagamento,
+
+  'FINALIZADA',
+
+  ''
+
+]);
+const linhasItens = dados.itens.map(function(item){
+
+  return [
+
+    Utilities.getUuid(),          // ID_ITEM
+
+    id,                           // ID_VENDA
+
+    item.idProduto || '',
+
+    item.nome || '',
+
+    item.tipoVenda || '',
+
+    Number(item.quantidade || 0),
+
+    Number(item.pesoKg || 0),
+
+    Number(item.precoUnitario || 0),
+
+    Number(item.subtotal || 0)
+
+  ];
+
+});
     e.itens.getRange(e.itens.getLastRow()+1,1,linhasItens.length,ITENS_VENDA_CABECALHOS.length).setValues(linhasItens);
     const linhasPag=dados.pagamentos.map(function(p){return [Utilities.getUuid(),id,String(p.forma||''),Number(p.valor||0),agora];});
     e.pagamentos.getRange(e.pagamentos.getLastRow()+1,1,linhasPag.length,PAGAMENTOS_VENDA_CABECALHOS.length).setValues(linhasPag);
     if(comanda){
       const ec=garantirEstruturaComandas(), ult=ec.abaComandas.getLastRow(), vals=ec.abaComandas.getRange(2,1,ult-1,COMANDAS_CABECALHOS.length).getValues();
-      for(let i=0;i<vals.length;i++) if(String(vals[i][0])===String(comanda.id)){ec.abaComandas.getRange(i+2,4).setValue('PAGA');ec.abaComandas.getRange(i+2,6).setValue(agora);ec.abaComandas.getRange(i+2,8).setValue(false);break;}
+      for(let i=0;i<vals.length;i++) if(String(vals[i][0])===String(comanda.id)){ec.abaComandas.getRange(i+2,5).setValue('PAGA');ec.abaComandas.getRange(i+2,7).setValue(agora);ec.abaComandas.getRange(i+2,9).setValue(false);break;}
       // Desativa os itens da comanda paga para que não permaneçam visíveis como itens ativos.
       const ultItens = ec.abaItens.getLastRow();
       if (ultItens >= 2) {
@@ -2226,11 +2996,82 @@ function finalizarVendaPDV(dados){
   } finally { lock.releaseLock(); }
 }
 
-function obterResumoVendas_(){
-  const e=garantirEstruturaVendas_(), ult=e.vendas.getLastRow(); if(ult<2)return {vendasHoje:0,faturamentoHoje:0,faturamentoMes:0};
-  const vals=e.vendas.getRange(2,1,ult-1,VENDAS_CABECALHOS.length).getValues(), hoje=new Date();
-  let qtd=0,dia=0,mes=0; vals.forEach(function(r){if(String(r[7])!=='FINALIZADA')return;const d=new Date(r[1]),v=Number(r[6]||0);if(d.getFullYear()===hoje.getFullYear()&&d.getMonth()===hoje.getMonth()){mes+=v;if(d.getDate()===hoje.getDate()){qtd++;dia+=v;}}});
-  return {vendasHoje:qtd,faturamentoHoje:dia,faturamentoMes:mes};
+function obterResumoVendas_() {
+
+  const e = garantirEstruturaVendas_();
+
+  const ultimaLinha = e.vendas.getLastRow();
+
+  if (ultimaLinha < 2) {
+
+    return {
+
+      vendasHoje: 0,
+
+      faturamentoHoje: 0,
+
+      faturamentoMes: 0
+
+    };
+
+  }
+
+  const valores = e.vendas
+    .getRange(
+      2,
+      1,
+      ultimaLinha - 1,
+      21
+    )
+    .getValues();
+
+  const hoje = new Date();
+
+  let quantidade = 0;
+
+  let faturamentoHoje = 0;
+
+  let faturamentoMes = 0;
+
+  valores.forEach(function(linha){
+
+    const data = new Date(linha[2]);      // DATA_HORA
+
+    const total = Number(linha[8] || 0);  // TOTAL
+
+    const status = String(linha[10] || '');
+
+    if (status !== 'FINALIZADA') return;
+
+    if (
+      data.getFullYear() === hoje.getFullYear() &&
+      data.getMonth() === hoje.getMonth()
+    ) {
+
+      faturamentoMes += total;
+
+      if (data.getDate() === hoje.getDate()) {
+
+        quantidade++;
+
+        faturamentoHoje += total;
+
+      }
+
+    }
+
+  });
+
+  return {
+
+    vendasHoje: quantidade,
+
+    faturamentoHoje: faturamentoHoje,
+
+    faturamentoMes: faturamentoMes
+
+  };
+
 }
 
 function listarTodosItensComanda_() {
@@ -2321,13 +3162,13 @@ function listarContasFinanceiras(filtros) {
   filtros = filtros || {};
 
   const dados = aba
-    .getRange(
-      2,
-      1,
-      ultimaLinha - 1,
-      21
-    )
-    .getValues();
+  .getRange(
+    2,
+    1,
+    aba.getLastRow() - 1,
+    21
+  )
+  .getValues();
 
   let contas = dados
     .map(converterLinhaFinanceiroEmObjeto)
