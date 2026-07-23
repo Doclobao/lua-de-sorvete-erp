@@ -869,6 +869,71 @@ function buscarHistoricoVendas() {
 
 }
 
+/**
+ * Retorna o valor recebido por forma de pagamento.
+ */
+function buscarResumoPagamentosHistorico() {
+
+  const ss = getBancoDeDados();
+  const aba = ss.getSheetByName('Pagamentos_Venda');
+
+  if (!aba) {
+    return {
+      pix: 0,
+      dinheiro: 0,
+      debito: 0,
+      credito: 0
+    };
+  }
+
+  const dados = aba.getDataRange().getValues();
+
+  let pix = 0;
+  let dinheiro = 0;
+  let debito = 0;
+  let credito = 0;
+
+  // Começa na linha 2 (ignora cabeçalho)
+  for (let i = 1; i < dados.length; i++) {
+
+    const forma = String(dados[i][2] || '')
+      .trim()
+      .toUpperCase();
+
+    const valor = Number(dados[i][3] || 0);
+
+    switch (forma) {
+
+      case 'PIX':
+        pix += valor;
+        break;
+
+      case 'DINHEIRO':
+        dinheiro += valor;
+        break;
+
+      case 'DÉBITO':
+      case 'DEBITO':
+        debito += valor;
+        break;
+
+      case 'CRÉDITO':
+      case 'CREDITO':
+        credito += valor;
+        break;
+
+    }
+
+  }
+
+  return {
+    pix: pix,
+    dinheiro: dinheiro,
+    debito: debito,
+    credito: credito
+  };
+
+}
 
   // ======================================================
 // SISTEMA DE BACKUP AUTOMÁTICO
@@ -2676,10 +2741,11 @@ if (status !== 'ABERTA') {
   }
   if (linhaComanda < 0) throw new Error('Comanda não encontrada.');
 
-  // Cancela a comanda sem apagar o histórico.
-  abaComandas.getRange(linhaComanda, 4).setValue('CANCELADA');
-  abaComandas.getRange(linhaComanda, 6).setValue(new Date());
-  abaComandas.getRange(linhaComanda, 8).setValue(false);
+
+ // Cancela a comanda sem apagar o histórico.
+abaComandas.getRange(linhaComanda, 5).setValue('CANCELADA'); // STATUS
+abaComandas.getRange(linhaComanda, 7).setValue(new Date());  // ATUALIZADO_EM
+abaComandas.getRange(linhaComanda, 9).setValue(false);       // ATIVO;
 
   // Desativa todos os itens da comanda em uma única gravação em lote.
   const ultimaLinhaItens = abaItens.getLastRow();
@@ -4844,4 +4910,12 @@ function recriarAbaFinanceiroNovaEstrutura() {
   };
 }
 
+function testePainel() {
+  const painel = listarPainelComandas();
 
+  Logger.log('==========================');
+  Logger.log('TOTAL MESAS: ' + painel.mesas.length);
+  Logger.log('TOTAL COMANDAS: ' + painel.comandas.length);
+  Logger.log(JSON.stringify(painel, null, 2));
+  Logger.log('==========================');
+}
