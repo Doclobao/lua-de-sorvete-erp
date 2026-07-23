@@ -3234,32 +3234,50 @@
   }
 
   function abrirDetalhesComanda(idComanda) {
-    idComandaSelecionada = String(idComanda);
-    selecionarMesaComanda(mesaComandaSelecionada, false);
 
-    if (cacheDetalhesComandas[idComandaSelecionada]) {
-      detalhesComandaAtual = cacheDetalhesComandas[idComandaSelecionada];
-      renderizarDetalhesComanda();
-      carregarProdutosParaComanda();
-      return;
-    }
+  idComandaSelecionada = String(idComanda);
 
-    google.script.run
-      .withSuccessHandler(function(comanda) {
+  selecionarMesaComanda(mesaComandaSelecionada, false);
 
-    const copia = JSON.parse(JSON.stringify(comanda));
-
-    detalhesComandaAtual = copia;
-    cacheDetalhesComandas[String(copia.id)] = copia;
+  // Exibe imediatamente o cache, se existir.
+  if (cacheDetalhesComandas[idComandaSelecionada]) {
+    detalhesComandaAtual = JSON.parse(
+      JSON.stringify(cacheDetalhesComandas[idComandaSelecionada])
+    );
 
     renderizarDetalhesComanda();
     carregarProdutosParaComanda();
-})
-      .withFailureHandler(function(erro) {
-        mostrarNotificacao(erro.message || 'Erro ao abrir comanda.', 'erro');
-      })
-      .obterDetalhesComanda(idComandaSelecionada);
   }
+
+  // Sempre consulta o servidor para garantir sincronização.
+  google.script.run
+    .withSuccessHandler(function(comanda) {
+
+      const copia = JSON.parse(JSON.stringify(comanda));
+
+      detalhesComandaAtual = copia;
+
+      cacheDetalhesComandas[String(copia.id)] = copia;
+
+      renderizarDetalhesComanda();
+
+      carregarProdutosParaComanda();
+
+    })
+    .withFailureHandler(function(erro) {
+
+      // Só mostra erro se nem cache existir.
+      if (!cacheDetalhesComandas[idComandaSelecionada]) {
+        mostrarNotificacao(
+          erro.message || 'Erro ao abrir comanda.',
+          'erro'
+        );
+      }
+
+    })
+    .obterDetalhesComanda(idComandaSelecionada);
+
+}
 
   function carregarProdutosParaComanda() {
     if (produtosParaComanda.length) return;
@@ -3769,7 +3787,7 @@
     if (mesaComandaSelecionada === Number(comanda.mesa)) {
   selecionarMesaComanda(mesaComandaSelecionada, false);
 }
-
+}
   function cancelarComandaAtual() {
     if (!detalhesComandaAtual || !idComandaSelecionada) return;
     const mensagem = (detalhesComandaAtual.itens || []).length
@@ -4134,6 +4152,14 @@ function carregarHistorico() {
 
       configurarFiltrosHistorico();
 
+      google.script.run
+  .withSuccessHandler(function(resumo){
+
+      console.log(resumo);
+
+  })
+  .buscarResumoPagamentosHistorico();
+
     })
 
     .withFailureHandler(function(erro){
@@ -4451,9 +4477,11 @@ if (!textoPesquisa.includes(pesquisa)) {
 
       });
 
-    renderizarHistorico();
+renderizarHistorico();
 
-    atualizarCardsHistorico();
+atualizarCardsHistorico();
+
+atualizarResumoFinanceiroHistorico();
 
 }
 
@@ -4801,12 +4829,8 @@ function atualizarCardsHistorico() {
     totalComandas
   );
 
-  atualizarResumoPagamentos(
-    pix,
-    cartao,
-    dinheiro,
-    quantidade
-  );
+  // O resumo financeiro agora é carregado
+// diretamente do Apps Script.
 
 }
 
@@ -4815,28 +4839,20 @@ function atualizarCardsHistorico() {
 // ------------------------------------------------------
 
 function atualizarResumoPagamentos(
-
     pix,
-
     cartao,
-
     dinheiro,
-
     total
-
 ){
 
     const elemento =
-      document.getElementById(
-        'historico-formas'
-      );
+      document.getElementById('historico-formas');
 
     if(!elemento){
         return;
     }
 
     const percentual = valor =>
-
         total
           ? ((valor * 100) / total).toFixed(1)
           : '0.0';
@@ -4857,6 +4873,92 @@ function atualizarResumoPagamentos(
 
 }
 
+
+// ------------------------------------------------------
+// RESUMO FINANCEIRO REAL
+// ------------------------------------------------------
+
+function atualizarResumoPagamentosValores(resumo){
+
+    const elemento =
+      document.getElementById('historico-formas');
+
+    if(!elemento){
+        return;
+    }
+
+    resumo = resumo || {};
+
+    elemento.innerHTML = `
+
+        PIX — ${formatarMoeda(resumo.pix || 0)}
+
+        <br>
+
+        Dinheiro — ${formatarMoeda(resumo.dinheiro || 0)}
+
+        <br>
+
+        Débito — ${formatarMoeda(resumo.debito || 0)}
+
+        <br>
+
+        Crédito — ${formatarMoeda(resumo.credito || 0)}
+
+    `;
+
+}
+
+// ------------------------------------------------------
+// RESUMO FINANCEIRO PELOS FILTROS
+// ------------------------------------------------------
+
+function atualizarResumoFinanceiroHistorico(){
+
+    let resumo = {
+
+        pix: 0,
+        dinheiro: 0,
+        debito: 0,
+        credito: 0
+
+    };
+
+    historicoFiltrado.forEach(function(venda){
+
+        const valor = Number(venda.total || 0);
+
+        const pagamento = String(venda.pagamento || "")
+            .trim()
+            .toUpperCase();
+
+        switch(pagamento){
+
+            case "PIX":
+                resumo.pix += valor;
+                break;
+
+            case "DINHEIRO":
+                resumo.dinheiro += valor;
+                break;
+
+            case "DÉBITO":
+            case "DEBITO":
+                resumo.debito += valor;
+                break;
+
+            case "CRÉDITO":
+            case "CREDITO":
+                resumo.credito += valor;
+                break;
+
+        }
+
+    });
+
+    atualizarResumoPagamentosValores(resumo);
+
+}
 // ------------------------------------------------------
 // DETALHES DA VENDA
 // ------------------------------------------------------
