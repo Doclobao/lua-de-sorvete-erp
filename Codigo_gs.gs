@@ -569,6 +569,23 @@ function obterAbaItensVenda() {
 
 }
 
+/**
+ * Retorna a aba Pagamentos_Venda.
+ */
+function obterAbaPagamentosVenda() {
+
+  const planilha = getBancoDeDados();
+
+  const aba = planilha.getSheetByName('Pagamentos_Venda');
+
+  if (!aba) {
+    throw new Error('A aba Pagamentos_Venda não foi encontrada.');
+  }
+
+  return aba;
+
+}
+
 
 /**
  * Lê todas as vendas cadastradas.
@@ -581,44 +598,116 @@ function listarVendasHistorico() {
     return [];
   }
 
+  //--------------------------------------------------
+  // VENDAS
+  //--------------------------------------------------
+
   const dados = aba
-  .getRange(
+    .getRange(
       2,
       1,
       aba.getLastRow() - 1,
       VENDAS_CABECALHOS.length
-  )
-  .getValues();
+    )
+    .getValues();
+
+  //--------------------------------------------------
+  // PAGAMENTOS
+  //--------------------------------------------------
+
+  const pagamentosPorVenda = {};
+
+  const abaPagamentos = obterAbaPagamentosVenda();
+
+  if (abaPagamentos.getLastRow() >= 2) {
+
+    const pagamentos = abaPagamentos
+      .getRange(
+        2,
+        1,
+        abaPagamentos.getLastRow() - 1,
+        PAGAMENTOS_VENDA_CABECALHOS.length
+      )
+      .getValues();
+
+    pagamentos.forEach(function(linha){
+
+  const idVenda = String(linha[1] || '');
+
+  if (!pagamentosPorVenda[idVenda]) {
+    pagamentosPorVenda[idVenda] = [];
+  }
+
+  pagamentosPorVenda[idVenda].push({
+
+    forma: String(linha[2] || '')
+      .trim()
+      .toUpperCase(),
+
+    valor: Number(linha[3] || 0)
+
+  });
+
+});
+
+  }
+
+  //--------------------------------------------------
+  // RETORNO
+  //--------------------------------------------------
 
   return dados.map(function(linha){
 
+    const idVenda = String(linha[0] || '');
+
+    const listaPagamentos =
+  pagamentosPorVenda[idVenda] || [];
+
+const pagamento =
+
+  listaPagamentos.length
+
+    ? listaPagamentos
+        .map(function(p){
+
+          return p.forma;
+
+        })
+        .join(' + ')
+
+    : String(linha[9] || '')
+        .trim()
+        .toUpperCase();
+
     return {
 
-  id: String(linha[0] || ''),
+      id: idVenda,
 
-  numero: String(linha[1] || ''),
+      numero: String(linha[1] || ''),
 
-  dataHora: linha[2],
+      dataHora: linha[2],
 
-  cliente: String(linha[3] || ''),
+      cliente: String(linha[3] || ''),
 
-  origem: String(linha[4] || '').toUpperCase(),
+      origem: String(linha[4] || '').toUpperCase(),
 
-  mesa: linha[5],
+      mesa: linha[5],
 
-  subtotal: Number(linha[6] || 0),
+      subtotal: Number(linha[6] || 0),
 
-  desconto: Number(linha[7] || 0),
+      desconto: Number(linha[7] || 0),
 
-  total: Number(linha[8] || 0),
+      total: Number(linha[8] || 0),
 
-  pagamento: String(linha[9] || '').toUpperCase(),
+      pagamento: pagamento,
 
-  status: String(linha[10] || 'FINALIZADA').toUpperCase(),
+      pagamentos: listaPagamentos,
 
-  observacoes: String(linha[11] || '')
+      status: String(linha[10] || 'FINALIZADA').toUpperCase(),
 
-};
+      observacoes: String(linha[11] || '')
+
+    };
 
   });
 
@@ -825,6 +914,8 @@ function listarHistorico() {
       tipo: venda.origem,
 
       pagamento: pagamento,
+
+      pagamentos: venda.pagamentos || [],
 
       status: venda.status || "FINALIZADA",
 
