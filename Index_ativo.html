@@ -715,7 +715,19 @@
 /* =====================================================
    PDV
 ===================================================== */
-.pdv-cabecalho{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:20px}.pdv-cabecalho h1{font-size:28px;margin-bottom:4px}.pdv-cabecalho p{color:#6b7280}.pdv-layout{display:grid;grid-template-columns:minmax(330px,.9fr) minmax(430px,1.1fr);gap:16px;min-height:650px}.pdv-painel{background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);overflow:hidden;display:flex;flex-direction:column}.pdv-painel-topo{padding:16px 18px;border-bottom:1px solid #e5e7eb}.pdv-painel-topo h2{font-size:17px;margin-bottom:4px}.pdv-painel-topo p{font-size:12px;color:#6b7280}.pdv-busca{padding:14px 16px;border-bottom:1px solid #e5e7eb}.pdv-busca input{width:100%;padding:12px 14px;border:1px solid #d1d5db;border-radius:9px;font-size:14px}.pdv-produtos{padding:12px;overflow:auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-content:start;flex:1}.pdv-produto-card{border:1px solid #e5e7eb;background:#fff;border-radius:10px;padding:13px;cursor:pointer;text-align:left;transition:.15s}.pdv-produto-card:hover{border-color:#60a5fa;background:#eff6ff;transform:translateY(-1px)}.pdv-produto-nome{font-weight:800;margin-bottom:5px}.pdv-produto-meta{font-size:11px;color:#6b7280}.pdv-produto-preco{font-size:15px;font-weight:800;color:#2563eb;margin-top:8px}.pdv-carrinho{padding:0 16px;overflow:auto;flex:1}.pdv-item{display:grid;grid-template-columns:minmax(150px,1fr) auto auto;gap:10px;align-items:center;padding:13px 0;border-bottom:1px solid #e5e7eb}.pdv-item-nome{font-weight:750}.pdv-item-info{font-size:11px;color:#6b7280;margin-top:4px}.pdv-item-total{font-weight:800;white-space:nowrap}.pdv-item-acoes{display:flex;gap:5px;align-items:center}.pdv-item-acoes button{border:0;border-radius:6px;padding:6px 8px;cursor:pointer;background:#f3f4f6;font-weight:800}.pdv-item-acoes .pdv-remover{background:#fef2f2;color:#dc2626}.pdv-vazio{padding:38px 16px;text-align:center;color:#6b7280}.pdv-resumo{border-top:1px solid #e5e7eb;padding:16px 18px}.pdv-total-linha{display:flex;justify-content:space-between;align-items:center;font-size:22px;font-weight:900;margin-bottom:14px}.pdv-btn-pagar{width:100%;border:0;background:#16a34a;color:#fff;padding:14px 16px;border-radius:9px;font-size:15px;font-weight:900;cursor:pointer}.pdv-btn-pagar:disabled{opacity:.5;cursor:not-allowed}.pdv-btn-limpar{width:100%;border:1px solid #fecaca;background:#fff;color:#dc2626;padding:10px 16px;border-radius:9px;font-weight:800;cursor:pointer;margin-top:8px}.pdv-modal-overlay{display:none;position:fixed;inset:0;background:rgba(17,24,39,.55);z-index:12000;align-items:center;justify-content:center;padding:20px}.pdv-modal-overlay.ativo{display:flex}.pdv-modal{background:#fff;width:100%;max-width:430px;border-radius:14px;padding:22px;box-shadow:0 20px 60px rgba(0,0,0,.25)}.pdv-modal h2{margin-bottom:6px}.pdv-modal p{font-size:13px;color:#6b7280;margin-bottom:15px}.pdv-modal input{width:100%;padding:12px;border:1px solid #d1d5db;border-radius:8px;margin-bottom:10px;font-size:16px}.pdv-previa{background:#f8fafc;border:1px solid #e5e7eb;border-radius:8px;padding:11px 12px;margin-bottom:14px}.pdv-modal-acoes{display:flex;justify-content:flex-end;gap:8px}.pdv-modal-acoes button{border:0;border-radius:8px;padding:10px 14px;font-weight:800;cursor:pointer}.pdv-modal-cancelar{background:#e5e7eb;color:#374151}.pdv-modal-confirmar{background:#2563eb;color:#fff}@media(max-width:900px){.pdv-layout{grid-template-columns:1fr}.pdv-painel{min-height:420px}}@media(max-width:520px){.pdv-produtos{grid-template-columns:1fr}.pdv-item{grid-template-columns:1fr auto}.pdv-item-acoes{grid-column:1/-1}}
+.pdv-cabecalho{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:20px}.pdv-cabecalho h1{font-size:28px;margin-bottom:4px}.pdv-cabecalho p{color:#6b7280}.pdv-layout{
+display:grid;
+grid-template-columns:minmax(330px,.9fr) minmax(430px,1.1fr);
+gap:16px;
+height:calc(100vh - 220px);
+min-height:650px;
+}.pdv-painel{background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);overflow:hidden;display:flex;flex-direction:column}.pdv-painel-topo{padding:16px 18px;border-bottom:1px solid #e5e7eb}.pdv-painel-topo h2{font-size:17px;margin-bottom:4px}.pdv-painel-topo p{font-size:12px;color:#6b7280}.pdv-busca{padding:14px 16px;border-bottom:1px solid #e5e7eb}.pdv-busca input{width:100%;padding:12px 14px;border:1px solid #d1d5db;border-radius:9px;font-size:14px}.pdv-produtos{padding:12px;overflow:auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-content:start;flex:1}.pdv-produto-card{border:1px solid #e5e7eb;background:#fff;border-radius:10px;padding:13px;cursor:pointer;text-align:left;transition:.15s}.pdv-produto-card:hover{border-color:#60a5fa;background:#eff6ff;transform:translateY(-1px)}.pdv-produto-nome{font-weight:800;margin-bottom:5px}.pdv-produto-meta{font-size:11px;color:#6b7280}.pdv-produto-preco{font-size:15px;font-weight:800;color:#2563eb;margin-top:8px}.pdv-carrinho{
+padding:0 16px;
+flex:1;
+overflow-y:auto;
+overflow-x:hidden;
+min-height:0;
+}.pdv-item{display:grid;grid-template-columns:minmax(150px,1fr) auto auto;gap:10px;align-items:center;padding:13px 0;border-bottom:1px solid #e5e7eb}.pdv-item-nome{font-weight:750}.pdv-item-info{font-size:11px;color:#6b7280;margin-top:4px}.pdv-item-total{font-weight:800;white-space:nowrap}.pdv-item-acoes{display:flex;gap:5px;align-items:center}.pdv-item-acoes button{border:0;border-radius:6px;padding:6px 8px;cursor:pointer;background:#f3f4f6;font-weight:800}.pdv-item-acoes .pdv-remover{background:#fef2f2;color:#dc2626}.pdv-vazio{padding:38px 16px;text-align:center;color:#6b7280}.pdv-resumo{border-top:1px solid #e5e7eb;padding:16px 18px}.pdv-total-linha{display:flex;justify-content:space-between;align-items:center;font-size:22px;font-weight:900;margin-bottom:14px}.pdv-btn-pagar{width:100%;border:0;background:#16a34a;color:#fff;padding:14px 16px;border-radius:9px;font-size:15px;font-weight:900;cursor:pointer}.pdv-btn-pagar:disabled{opacity:.5;cursor:not-allowed}.pdv-btn-limpar{width:100%;border:1px solid #fecaca;background:#fff;color:#dc2626;padding:10px 16px;border-radius:9px;font-weight:800;cursor:pointer;margin-top:8px}.pdv-modal-overlay{display:none;position:fixed;inset:0;background:rgba(17,24,39,.55);z-index:12000;align-items:center;justify-content:center;padding:20px}.pdv-modal-overlay.ativo{display:flex}.pdv-modal{background:#fff;width:100%;max-width:430px;border-radius:14px;padding:22px;box-shadow:0 20px 60px rgba(0,0,0,.25)}.pdv-modal h2{margin-bottom:6px}.pdv-modal p{font-size:13px;color:#6b7280;margin-bottom:15px}.pdv-modal input{width:100%;padding:12px;border:1px solid #d1d5db;border-radius:8px;margin-bottom:10px;font-size:16px}.pdv-previa{background:#f8fafc;border:1px solid #e5e7eb;border-radius:8px;padding:11px 12px;margin-bottom:14px}.pdv-modal-acoes{display:flex;justify-content:flex-end;gap:8px}.pdv-modal-acoes button{border:0;border-radius:8px;padding:10px 14px;font-weight:800;cursor:pointer}.pdv-modal-cancelar{background:#e5e7eb;color:#374151}.pdv-modal-confirmar{background:#2563eb;color:#fff}@media(max-width:900px){.pdv-layout{grid-template-columns:1fr}.pdv-painel{min-height:420px}}@media(max-width:520px){.pdv-produtos{grid-template-columns:1fr}.pdv-item{grid-template-columns:1fr auto}.pdv-item-acoes{grid-column:1/-1}}
 
 
 /* PDV PAGAMENTO - ETAPA 2 */
@@ -2636,15 +2648,15 @@
         </option>
 
         <option>
-          DÉBITO
+          DEBITO
         </option>
 
         <option>
-          CRÉDITO
+          CREDITO
         </option>
 
-        <option>
-          MISTO
+        <option> 
+          MISTO 
         </option>
 
       </select>
@@ -4152,13 +4164,8 @@ function carregarHistorico() {
 
       configurarFiltrosHistorico();
 
-      google.script.run
-  .withSuccessHandler(function(resumo){
-
-      console.log(resumo);
-
-  })
-  .buscarResumoPagamentosHistorico();
+      // Atualiza o resumo usando os dados já carregados
+atualizarResumoFinanceiroHistorico();
 
     })
 
@@ -4434,18 +4441,38 @@ if (!textoPesquisa.includes(pesquisa)) {
 
           }
 
-          if(pagamento){
+          if (pagamento) {
 
-              if(
-                String(venda.pagamento)
+    const formas = Array.isArray(venda.pagamentos)
+        ? venda.pagamentos
+        : [];
+
+    const encontrou = formas.some(function(p){
+
+        return String(p.forma)
+            .toUpperCase() === pagamento;
+
+    });
+
+    // Para vendas antigas que ainda não possuem a lista
+    if (!formas.length) {
+
+        if (
+            String(venda.pagamento)
                 .toUpperCase() !== pagamento
-              ){
+        ) {
 
-                  return false;
+            return false;
 
-              }
+        }
 
-          }
+    } else if (!encontrou) {
+
+        return false;
+
+    }
+
+}
 
           if(dataInicial){
 
@@ -4926,13 +4953,17 @@ function atualizarResumoFinanceiroHistorico(){
 
     historicoFiltrado.forEach(function(venda){
 
-        const valor = Number(venda.total || 0);
+        if (Array.isArray(venda.pagamentos) && venda.pagamentos.length) {
 
-        const pagamento = String(venda.pagamento || "")
+    venda.pagamentos.forEach(function(p){
+
+        const forma = String(p.forma || "")
             .trim()
             .toUpperCase();
 
-        switch(pagamento){
+        const valor = Number(p.valor || 0);
+
+        switch (forma) {
 
             case "PIX":
                 resumo.pix += valor;
@@ -4953,6 +4984,42 @@ function atualizarResumoFinanceiroHistorico(){
                 break;
 
         }
+
+    });
+
+} else {
+
+    // Compatibilidade com vendas antigas
+
+    const valor = Number(venda.total || 0);
+
+    const pagamento = String(venda.pagamento || "")
+        .trim()
+        .toUpperCase();
+
+    switch (pagamento) {
+
+        case "PIX":
+            resumo.pix += valor;
+            break;
+
+        case "DINHEIRO":
+            resumo.dinheiro += valor;
+            break;
+
+        case "DÉBITO":
+        case "DEBITO":
+            resumo.debito += valor;
+            break;
+
+        case "CRÉDITO":
+        case "CREDITO":
+            resumo.credito += valor;
+            break;
+
+    }
+
+}
 
     });
 
@@ -4990,7 +5057,30 @@ function abrirDetalhesHistorico(id){
         ["Comanda", venda.comanda || "-"],
         ["Cliente", venda.cliente || "-"],
         ["Atendente", venda.atendente || "-"],
-        ["Pagamento", venda.pagamento || "-"],
+        ["Pagamento",
+  (function(){
+
+      if(
+          !venda.pagamentos ||
+          !venda.pagamentos.length
+      ){
+          return venda.pagamento || "-";
+      }
+
+      return venda.pagamentos
+          .map(function(p){
+
+              return (
+                  p.forma +
+                  " - " +
+                  formatarMoeda(p.valor)
+              );
+
+          })
+          .join("<br>");
+
+  })()
+],
         ["Data", venda.data || "-"],
         ["Total", formatarMoeda(venda.total || 0)]
 
