@@ -1373,9 +1373,39 @@ min-height:0;
           <div class="pdv-painel-topo"><h2>🧾 Itens da venda</h2><p>Venda atual</p></div>
           <div id="pdv-carrinho" class="pdv-carrinho"><div class="pdv-vazio">Nenhum produto adicionado.</div></div>
           <div class="pdv-resumo">
-            <div class="pdv-total-linha"><span>Total</span><span id="pdv-total">R$ 0,00</span></div>
-            <button id="pdv-btn-pagar" class="pdv-btn-pagar" onclick="irPagamentoPDV()" disabled>Ir para pagamento</button>
-            <button id="pdv-btn-limpar" class="pdv-btn-limpar" onclick="limparVendaPDV()" style="display:none">Cancelar venda</button>
+            <div class="pdv-total-linha">
+    <span>Total</span>
+    <span id="pdv-total">R$ 0,00</span>
+</div>
+
+<div style="display:flex; gap:8px; margin-bottom:8px;">
+
+    <button
+        id="pdv-btn-caixa"
+        class="btn btn-secundario"
+        style="flex:1"
+        onclick="abrirModalCaixa()">
+        🏦 Caixa
+    </button>
+
+    <button
+        id="pdv-btn-pagar"
+        class="pdv-btn-pagar"
+        style="flex:2"
+        onclick="irPagamentoPDV()"
+        disabled>
+        Ir para pagamento
+    </button>
+
+</div>
+
+<button
+    id="pdv-btn-limpar"
+    class="pdv-btn-limpar"
+    onclick="limparVendaPDV()"
+    style="display:none">
+    Cancelar venda
+</button>
           </div>
         </div>
       </div>
@@ -1415,6 +1445,63 @@ min-height:0;
         </div>
       </div>
     </div>
+    <!-- =====================================================
+     MODAL DO CAIXA
+===================================================== -->
+
+<div id="modal-caixa" class="pdv-modal-overlay" onclick="fecharModalCaixaFora(event)">
+
+    <div class="pdv-modal" style="max-width:600px;">
+
+        <h2>🏦 Controle de Caixa</h2>
+
+        <p>
+            Selecione a operação desejada.
+        </p>
+
+        <div style="display:grid;gap:10px;margin-top:20px;">
+
+            <button
+                class="btn btn-primario"
+                onclick="abrirCaixa()">
+
+                🔓 Abrir Caixa
+
+            </button>
+
+            <button
+                class="btn btn-secundario"
+                onclick="movimentacaoCaixa()">
+
+                💰 Movimentações
+
+            </button>
+
+            <button
+                class="btn btn-secundario"
+                onclick="fecharCaixa()">
+
+                🔒 Fechar Caixa
+
+            </button>
+
+        </div>
+
+        <div class="pdv-modal-acoes" style="margin-top:20px;">
+
+            <button
+                class="pdv-modal-cancelar"
+                onclick="fecharModalCaixa()">
+
+                Fechar
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
 
     <!-- COMANDAS -->
     <section id="pagina-comandas" class="pagina">
@@ -2605,7 +2692,7 @@ min-height:0;
       <input
         type="text"
         id="historico-pesquisa"
-        placeholder="Pesquisar cliente, venda, comanda..."
+        placeholder="Pesquisar cliente, origem, comanda..."
       >
 
       <select id="historico-origem">
@@ -2614,8 +2701,8 @@ min-height:0;
           Todas as origens
         </option>
 
-        <option value="COMANDA">
-          Comandas
+        <option value="MESA">
+          Mesa
         </option>
 
         <option value="PDV">
@@ -4093,6 +4180,57 @@ let auditoriaCarregada = [];
   }
   function atualizarOrigemPDV(){ const el=document.getElementById('pdv-origem'); if(!el)return; if(origemComandaPDV){el.textContent='🧾 Pagamento da Mesa '+String(origemComandaPDV.mesa).padStart(2,'0')+' · '+(origemComandaPDV.nomeCliente||'Comanda '+origemComandaPDV.id);el.classList.add('ativo');}else{el.textContent='';el.classList.remove('ativo');} }
 
+//=====================================================
+// CONTROLE DE CAIXA
+//=====================================================
+
+function abrirModalCaixa(){
+
+    const modal =
+        document.getElementById("modal-caixa");
+
+    if(modal){
+        modal.classList.add("ativo");
+    }
+
+}
+
+function fecharModalCaixa(){
+
+    const modal =
+        document.getElementById("modal-caixa");
+
+    if(modal){
+        modal.classList.remove("ativo");
+    }
+
+}
+
+function fecharModalCaixaFora(event){
+
+    if(event.target.id==="modal-caixa"){
+        fecharModalCaixa();
+    }
+
+}
+
+function abrirCaixa(){
+
+    alert("Em desenvolvimento");
+
+}
+
+function movimentacaoCaixa(){
+
+    alert("Em desenvolvimento");
+
+}
+
+function fecharCaixa(){
+
+    alert("Em desenvolvimento");
+
+}
 // ======================================================
 // HISTÓRICO DE VENDAS
 // BLOCO 3.1
