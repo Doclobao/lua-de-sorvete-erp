@@ -3567,6 +3567,145 @@ function gravarItensVenda_(abaItens, idVenda, itens, dataHora){
 
 }
 
+//=====================================================
+// GRAVA OS ITENS DA VENDA
+//=====================================================
+
+function gravarItensVenda_(abaItens, idVenda, itens){
+
+    const linhasItens = itens.map(function(item){
+
+        return [
+
+            Utilities.getUuid(),
+
+            idVenda,
+
+            item.idProduto || '',
+
+            item.nome || '',
+
+            item.tipoVenda || '',
+
+            Number(item.quantidade || 0),
+
+            Number(item.pesoKg || 0),
+
+            Number(item.precoUnitario || 0),
+
+            Number(item.subtotal || 0)
+
+        ];
+
+    });
+
+    abaItens.getRange(
+
+        abaItens.getLastRow() + 1,
+
+        1,
+
+        linhasItens.length,
+
+        ITENS_VENDA_CABECALHOS.length
+
+    ).setValues(linhasItens);
+
+}
+
+//=====================================================
+// REGISTRA OS MOVIMENTOS DA VENDA NO CAIXA
+//=====================================================
+
+function registrarMovimentosVendaCaixa_(sessaoCaixa, numeroVenda, pagamentos, idVenda, comanda){
+
+    pagamentos.forEach(function(p){
+
+        registrarMovimentoCaixa(
+
+            sessaoCaixa.idSessao,
+
+            "VENDA",
+
+            "PDV",
+
+            "Venda nº " + numeroVenda,
+
+            String(p.forma || ""),
+
+            Number(p.valor || 0),
+
+            Session.getActiveUser().getEmail() || "",
+
+            idVenda,
+
+            comanda ? comanda.id : "",
+
+            ""
+
+        );
+
+    });
+
+}
+//=====================================================
+// FINALIZA A COMANDA APÓS A VENDA
+//=====================================================
+
+function finalizarComanda_(comanda, dataHora){
+
+    if(!comanda) return;
+
+    const ec = garantirEstruturaComandas();
+
+    const ult = ec.abaComandas.getLastRow();
+
+    const vals = ec.abaComandas
+        .getRange(2,1,ult-1,COMANDAS_CABECALHOS.length)
+        .getValues();
+
+    for(let i=0;i<vals.length;i++){
+
+        if(String(vals[i][0])===String(comanda.id)){
+
+            ec.abaComandas.getRange(i+2,5).setValue('PAGA');
+
+            ec.abaComandas.getRange(i+2,7).setValue(dataHora);
+
+            ec.abaComandas.getRange(i+2,9).setValue(false);
+
+            break;
+
+        }
+
+    }
+
+    const ultItens = ec.abaItens.getLastRow();
+
+    if(ultItens < 2) return;
+
+    const dadosItens = ec.abaItens
+        .getRange(
+            2,
+            1,
+            ultItens-1,
+            ITENS_COMANDA_CABECALHOS.length
+        )
+        .getValues();
+
+    for(let j=0;j<dadosItens.length;j++){
+
+        if(String(dadosItens[j][1])===String(comanda.id)){
+
+            ec.abaItens
+                .getRange(j+2,11)
+                .setValue(false);
+
+        }
+
+    }
+
+}
 function finalizarVendaPDV(dados){
       //=====================================================
     // VERIFICA SE EXISTE CAIXA ABERTO
@@ -3586,7 +3725,24 @@ function finalizarVendaPDV(dados){
   if(!dados.pagamentos||!dados.pagamentos.length) throw new Error('Informe a forma de pagamento.');
   const lock=LockService.getScriptLock(); lock.waitLock(15000);
   try{
-    const total=dados.itens.reduce(function(s,i){return s+Number(i.subtotal||0);},0);
+    const subtotal = dados.itens.reduce(function(s,i){
+    return s + Number(i.subtotal || 0);
+},0);
+
+const desconto = Math.max(
+    0,
+    Number(dados.desconto || 0)
+);
+
+if(desconto > subtotal){
+
+    throw new Error(
+        "O desconto não pode ser maior que o subtotal da venda."
+    );
+
+}
+
+const total = subtotal - desconto;
     const informado=dados.pagamentos.reduce(function(s,p){return s+Number(p.valor||0);},0);
     const temDinheiro=dados.pagamentos.some(function(p){return String(p.forma)==='DINHEIRO';});
     if(informado+0.005<total) throw new Error('O valor pago é menor que o total da venda.');
@@ -3611,8 +3767,7 @@ const numeroVenda = gerarNumeroVenda_(e.vendas);
     ? String(dados.pagamentos[0].forma || '')
     : 'MISTO';
 
-const subtotal = total;
-const desconto = Number(dados.desconto || 0);
+
 
 e.vendas.appendRow([
 
@@ -3646,32 +3801,15 @@ e.vendas.appendRow([
   ''
 
 ]);
-const linhasItens = dados.itens.map(function(item){
+gravarItensVenda_(
 
-  return [
+    e.itens,
 
-    Utilities.getUuid(),          // ID_ITEM
+    id,
 
-    id,                           // ID_VENDA
+    dados.itens
 
-    item.idProduto || '',
-
-    item.nome || '',
-
-    item.tipoVenda || '',
-
-    Number(item.quantidade || 0),
-
-    Number(item.pesoKg || 0),
-
-    Number(item.precoUnitario || 0),
-
-    Number(item.subtotal || 0)
-
-  ];
-
-});
-    e.itens.getRange(e.itens.getLastRow()+1,1,linhasItens.length,ITENS_VENDA_CABECALHOS.length).setValues(linhasItens);
+);
     gravarPagamentosVenda_(
 
     e.pagamentos,
@@ -3687,47 +3825,26 @@ const linhasItens = dados.itens.map(function(item){
 // REGISTRA A VENDA NO MOVIMENTO DO CAIXA
 //=====================================================
 
-dados.pagamentos.forEach(function(p){
+registrarMovimentosVendaCaixa_(
 
-    registrarMovimentoCaixa(
+    sessaoCaixa,
 
-        sessaoCaixa.idSessao,
+    numeroVenda,
 
-        "VENDA",
+    dados.pagamentos,
 
-        "PDV",
+    id,
 
-        "Venda nº " + numeroVenda,
+    comanda
 
-        String(p.forma || ""),
+);
+    finalizarComanda_(
 
-        Number(p.valor || 0),
+    comanda,
 
-        Session.getActiveUser().getEmail() || "",
+    agora
 
-        id,
-
-        comanda ? comanda.id : "",
-
-        ""
-
-    );
-
-});
-    if(comanda){
-      const ec=garantirEstruturaComandas(), ult=ec.abaComandas.getLastRow(), vals=ec.abaComandas.getRange(2,1,ult-1,COMANDAS_CABECALHOS.length).getValues();
-      for(let i=0;i<vals.length;i++) if(String(vals[i][0])===String(comanda.id)){ec.abaComandas.getRange(i+2,5).setValue('PAGA');ec.abaComandas.getRange(i+2,7).setValue(agora);ec.abaComandas.getRange(i+2,9).setValue(false);break;}
-      // Desativa os itens da comanda paga para que não permaneçam visíveis como itens ativos.
-      const ultItens = ec.abaItens.getLastRow();
-      if (ultItens >= 2) {
-        const dadosItens = ec.abaItens.getRange(2, 1, ultItens - 1, ITENS_COMANDA_CABECALHOS.length).getValues();
-        for (let j = 0; j < dadosItens.length; j++) {
-          if (String(dadosItens[j][1]) === String(comanda.id)) {
-            ec.abaItens.getRange(j + 2, 11).setValue(false);
-          }
-        }
-      }
-    }
+);
     registrarAuditoria('PDV','VENDA',id,'Venda finalizada'+(comanda?' a partir da comanda '+comanda.id:' no balcão'),'',JSON.stringify({total:total,pagamentos:dados.pagamentos}));
     return {sucesso:true,idVenda:id,total:total,troco:Math.max(0,informado-total)};
   } finally { lock.releaseLock(); }
