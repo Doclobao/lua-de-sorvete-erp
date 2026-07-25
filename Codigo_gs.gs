@@ -3039,9 +3039,549 @@ function garantirEstruturaVendas_() {
   };
 
 }
+//=====================================================
+// CAIXA
+//=====================================================
 
+const CAIXA_CABECALHOS = [
+
+  "ID_SESSAO",
+  "STATUS",
+  "OPERADOR",
+  "DATA_ABERTURA",
+  "DATA_FECHAMENTO",
+  "VALOR_INICIAL",
+  "VALOR_FINAL",
+  "OBSERVACAO"
+
+];
+const MOVIMENTOS_CAIXA_CABECALHOS = [
+
+    "ID_MOVIMENTO",
+    "ID_SESSAO",
+    "DATA_HORA",
+    "TIPO",
+    "ORIGEM",
+    "DESCRICAO",
+    "FORMA_PAGAMENTO",
+    "VALOR",
+    "USUARIO",
+    "ID_VENDA",
+    "ID_COMANDA",
+    "OBSERVACAO"
+
+];
+function garantirEstruturaCaixa_() {
+
+    const planilha = getBancoDeDados();
+
+    let aba = planilha.getSheetByName("Caixa");
+
+    if (!aba) {
+
+        aba = planilha.insertSheet("Caixa");
+
+        aba.getRange(
+            1,
+            1,
+            1,
+            CAIXA_CABECALHOS.length
+        ).setValues([CAIXA_CABECALHOS]);
+
+        aba.setFrozenRows(1);
+
+    }
+
+    return aba;
+
+}
+//=====================================================
+// GARANTE A ESTRUTURA DA ABA MOVIMENTOS_CAIXA
+//=====================================================
+
+function garantirEstruturaMovimentosCaixa_(){
+
+    const planilha = getBancoDeDados();
+
+    let aba = planilha.getSheetByName("Movimentos_Caixa");
+
+    if(!aba){
+
+        aba = planilha.insertSheet("Movimentos_Caixa");
+
+        aba.getRange(
+            1,
+            1,
+            1,
+            MOVIMENTOS_CAIXA_CABECALHOS.length
+        ).setValues([MOVIMENTOS_CAIXA_CABECALHOS]);
+
+        aba.setFrozenRows(1);
+
+    }
+
+    return aba;
+
+}
+//=====================================================
+// GERA O PRÓXIMO ID DE MOVIMENTO DO CAIXA
+//=====================================================
+
+function gerarIdMovimentoCaixa_(){
+
+    const aba = garantirEstruturaMovimentosCaixa_();
+
+    const ultimaLinha = aba.getLastRow();
+
+    if(ultimaLinha <= 1){
+
+        return "MCX000001";
+
+    }
+
+    const ultimoId = String(
+        aba.getRange(
+            ultimaLinha,
+            1
+        ).getValue()
+    ).trim();
+
+    if(!ultimoId){
+
+        return "MCX000001";
+
+    }
+
+    const numero = Number(
+        ultimoId.replace("MCX","")
+    );
+
+    return "MCX" + String(numero + 1).padStart(6,"0");
+
+}
+//=====================================================
+// REGISTRA UMA MOVIMENTAÇÃO DO CAIXA
+//=====================================================
+
+function registrarMovimentoCaixa(
+    idSessao,
+    tipo,
+    origem,
+    descricao,
+    formaPagamento,
+    valor,
+    usuario,
+    idVenda,
+    idComanda,
+    observacao
+)
+{
+
+    const aba = garantirEstruturaMovimentosCaixa_();
+
+    const idMovimento = gerarIdMovimentoCaixa_();
+
+    aba.appendRow([
+
+        idMovimento,
+        idSessao,
+        new Date(),
+        tipo,
+        origem,
+        descricao || "",
+        formaPagamento || "",
+        Number(valor) || 0,
+        usuario || "",
+idVenda || "",
+idComanda || "",
+observacao || ""
+            ]);
+
+    return idMovimento;
+
+}
+//=====================================================
+// VERIFICA SE EXISTE CAIXA ABERTO
+//=====================================================
+
+function verificarCaixaAberto(){
+
+    const aba = garantirEstruturaCaixa_();
+
+    const ultimaLinha = aba.getLastRow();
+
+    if(ultimaLinha <= 1){
+
+        return {
+            aberto:false
+        };
+
+    }
+
+    const status = String(
+        aba.getRange(
+            ultimaLinha,
+            2
+        ).getValue()
+    ).toUpperCase();
+
+    if(status === "ABERTO"){
+
+        return{
+
+            aberto:true,
+
+            operador:
+                aba.getRange(
+                    ultimaLinha,
+                    3
+                ).getValue(),
+
+            abertura:
+                aba.getRange(
+                    ultimaLinha,
+                    4
+                ).getValue(),
+
+            valorInicial:
+                Number(
+                    aba.getRange(
+                        ultimaLinha,
+                        6
+                    ).getValue()
+                ) || 0
+
+        };
+
+    }
+
+    return{
+
+        aberto:false
+
+    };
+
+}
+//=====================================================
+// RETORNA A SESSÃO DE CAIXA ABERTA
+//=====================================================
+
+function obterSessaoCaixaAberta(){
+
+    const aba = garantirEstruturaCaixa_();
+
+    const ultimaLinha = aba.getLastRow();
+
+    if(ultimaLinha <= 1){
+
+        return null;
+
+    }
+
+    const dados = aba.getRange(
+        ultimaLinha,
+        1,
+        1,
+        8
+    ).getValues()[0];
+
+    if(String(dados[1]).toUpperCase() !== "ABERTO"){
+
+        return null;
+
+    }
+
+    return{
+
+        idSessao: dados[0],
+        status: dados[1],
+        operador: dados[2],
+        abertura: dados[3],
+        fechamento: dados[4],
+        valorInicial: Number(dados[5]) || 0,
+        valorFinal: Number(dados[6]) || 0,
+        observacao: dados[7]
+
+    };
+
+}
+//=====================================================
+// LOCALIZA A LINHA DE UMA SESSÃO DE CAIXA
+//=====================================================
+
+function obterLinhaSessaoCaixa_(idSessao){
+
+    const aba = garantirEstruturaCaixa_();
+
+    const ultimaLinha = aba.getLastRow();
+
+    if(ultimaLinha <= 1){
+
+        return -1;
+
+    }
+
+    const sessoes = aba.getRange(
+        2,
+        1,
+        ultimaLinha - 1,
+        1
+    ).getValues();
+
+    for(let i = 0; i < sessoes.length; i++){
+
+        if(String(sessoes[i][0]) === String(idSessao)){
+
+            return i + 2;
+
+        }
+
+    }
+
+    return -1;
+
+}
+
+//=====================================================
+// FECHAR CAIXA
+//=====================================================
+
+function fecharCaixa(valorFinal, observacao, operador){
+
+    const sessao = obterSessaoCaixaAberta();
+
+    if(!sessao){
+
+        throw new Error("Não existe caixa aberto.");
+
+    }
+
+    const linha = obterLinhaSessaoCaixa_(sessao.idSessao);
+
+    if(linha < 2){
+
+        throw new Error("Sessão de caixa não encontrada.");
+
+    }
+
+    const aba = garantirEstruturaCaixa_();
+
+    aba.getRange(linha, 2).setValue("FECHADO");
+    aba.getRange(linha, 5).setValue(new Date());
+    aba.getRange(linha, 7).setValue(Number(valorFinal) || 0);
+
+    if(observacao){
+
+        aba.getRange(linha, 8).setValue(observacao);
+
+    }
+
+    registrarMovimentoCaixa(
+
+        sessao.idSessao,
+        "FECHAMENTO",
+        "SISTEMA",
+        observacao || "Fechamento do caixa",
+        "",
+        Number(valorFinal) || 0,
+        operador || sessao.operador
+
+    );
+
+    return{
+
+        sucesso:true,
+        sessao:sessao.idSessao
+
+    };
+
+}
+//=====================================================
+// GERA O PRÓXIMO ID DA SESSÃO DE CAIXA
+//=====================================================
+
+function gerarIdSessaoCaixa_(){
+
+    const aba = garantirEstruturaCaixa_();
+
+    const ultimaLinha = aba.getLastRow();
+
+    if(ultimaLinha <= 1){
+
+        return "CX000001";
+
+    }
+
+    const ultimoId = String(
+        aba.getRange(
+            ultimaLinha,
+            1
+        ).getValue()
+    ).trim();
+
+    if(!ultimoId){
+
+        return "CX000001";
+
+    }
+
+    const numero = Number(
+        ultimoId.replace("CX","")
+    );
+
+    return "CX" + String(numero + 1).padStart(6,"0");
+
+}
+//=====================================================
+// ABRIR CAIXA
+//=====================================================
+
+function abrirCaixa(operador, valorInicial, observacao){
+
+    const caixa = verificarCaixaAberto();
+
+    if(caixa.aberto){
+
+        throw new Error("Já existe um caixa aberto.");
+
+    }
+
+    const aba = garantirEstruturaCaixa_();
+
+    const idSessao = gerarIdSessaoCaixa_();
+
+    aba.appendRow([
+
+        idSessao,
+        "ABERTO",
+        operador,
+        new Date(),
+        "",
+        Number(valorInicial) || 0,
+        "",
+        observacao || ""
+
+    ]);
+        registrarMovimentoCaixa(
+
+        idSessao,
+        "ABERTURA",
+        "SISTEMA",
+        observacao || "Abertura do caixa",
+        "DINHEIRO",
+        Number(valorInicial) || 0,
+        operador
+
+    );
+
+    return {
+
+        sucesso:true,
+
+        mensagem:"Caixa aberto com sucesso.",
+
+        sessao:idSessao
+
+    };
+
+}
+//=====================================================
+// GRAVA OS PAGAMENTOS DA VENDA
+//=====================================================
+
+function gravarPagamentosVenda_(abaPagamentos, idVenda, pagamentos, dataHora){
+
+    const linhas = pagamentos.map(function(p){
+
+        return [
+
+            Utilities.getUuid(),
+
+            idVenda,
+
+            String(p.forma || ""),
+
+            Number(p.valor || 0),
+
+            dataHora
+
+        ];
+
+    });
+
+    abaPagamentos.getRange(
+
+        abaPagamentos.getLastRow() + 1,
+
+        1,
+
+        linhas.length,
+
+        PAGAMENTOS_VENDA_CABECALHOS.length
+
+    ).setValues(linhas);
+
+}
+
+//=====================================================
+// GRAVA OS ITENS DA VENDA
+//=====================================================
+
+function gravarItensVenda_(abaItens, idVenda, itens, dataHora){
+
+    const linhas = itens.map(function(item){
+
+        return [
+
+            Utilities.getUuid(),
+
+            idVenda,
+
+            item.idProduto,
+
+            item.descricao,
+
+            Number(item.quantidade || 0),
+
+            Number(item.valorUnitario || 0),
+
+            Number(item.valorTotal || 0),
+
+            dataHora
+
+        ];
+
+    });
+
+    abaItens.getRange(
+
+        abaItens.getLastRow() + 1,
+
+        1,
+
+        linhas.length,
+
+        ITENS_VENDA_CABECALHOS.length
+
+    ).setValues(linhas);
+
+}
 
 function finalizarVendaPDV(dados){
+      //=====================================================
+    // VERIFICA SE EXISTE CAIXA ABERTO
+    //=====================================================
+
+    const sessaoCaixa = obterSessaoCaixaAberta();
+
+    if(!sessaoCaixa){
+
+        throw new Error(
+            "Não existe caixa aberto. Abra o caixa antes de realizar vendas."
+        );
+
+    }
+
   if(!dados||!dados.itens||!dados.itens.length) throw new Error('A venda não possui itens.');
   if(!dados.pagamentos||!dados.pagamentos.length) throw new Error('Informe a forma de pagamento.');
   const lock=LockService.getScriptLock(); lock.waitLock(15000);
@@ -3132,8 +3672,48 @@ const linhasItens = dados.itens.map(function(item){
 
 });
     e.itens.getRange(e.itens.getLastRow()+1,1,linhasItens.length,ITENS_VENDA_CABECALHOS.length).setValues(linhasItens);
-    const linhasPag=dados.pagamentos.map(function(p){return [Utilities.getUuid(),id,String(p.forma||''),Number(p.valor||0),agora];});
-    e.pagamentos.getRange(e.pagamentos.getLastRow()+1,1,linhasPag.length,PAGAMENTOS_VENDA_CABECALHOS.length).setValues(linhasPag);
+    gravarPagamentosVenda_(
+
+    e.pagamentos,
+
+    id,
+
+    dados.pagamentos,
+
+    agora
+
+);
+    //=====================================================
+// REGISTRA A VENDA NO MOVIMENTO DO CAIXA
+//=====================================================
+
+dados.pagamentos.forEach(function(p){
+
+    registrarMovimentoCaixa(
+
+        sessaoCaixa.idSessao,
+
+        "VENDA",
+
+        "PDV",
+
+        "Venda nº " + numeroVenda,
+
+        String(p.forma || ""),
+
+        Number(p.valor || 0),
+
+        Session.getActiveUser().getEmail() || "",
+
+        id,
+
+        comanda ? comanda.id : "",
+
+        ""
+
+    );
+
+});
     if(comanda){
       const ec=garantirEstruturaComandas(), ult=ec.abaComandas.getLastRow(), vals=ec.abaComandas.getRange(2,1,ult-1,COMANDAS_CABECALHOS.length).getValues();
       for(let i=0;i<vals.length;i++) if(String(vals[i][0])===String(comanda.id)){ec.abaComandas.getRange(i+2,5).setValue('PAGA');ec.abaComandas.getRange(i+2,7).setValue(agora);ec.abaComandas.getRange(i+2,9).setValue(false);break;}
