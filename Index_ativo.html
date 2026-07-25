@@ -1373,10 +1373,43 @@ min-height:0;
           <div class="pdv-painel-topo"><h2>🧾 Itens da venda</h2><p>Venda atual</p></div>
           <div id="pdv-carrinho" class="pdv-carrinho"><div class="pdv-vazio">Nenhum produto adicionado.</div></div>
           <div class="pdv-resumo">
-            <div class="pdv-total-linha">
-    <span>Total</span>
-    <span id="pdv-total">R$ 0,00</span>
-</div>
+            <div class="pdv-resumo">
+
+    <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+
+        <span>Subtotal</span>
+
+        <strong id="pdv-subtotal">
+            R$ 0,00
+        </strong>
+
+    </div>
+
+    <div
+        id="pdv-linha-desconto"
+        style="display:flex;justify-content:space-between;margin-bottom:12px;cursor:pointer;"
+        onclick="editarDescontoPDV()"
+    >
+
+        <span>
+            Desconto ✏️
+        </span>
+
+        <strong id="pdv-desconto">
+            R$ 0,00
+        </strong>
+
+    </div>
+
+    <div class="pdv-total-linha">
+
+        <span>Total</span>
+
+        <span id="pdv-total">
+            R$ 0,00
+        </span>
+
+    </div>
 
 <div style="display:flex; gap:8px; margin-bottom:8px;">
 
@@ -4010,6 +4043,7 @@ let auditoriaCarregada = [];
   let origemComandaPDV = null;
   let pagamentosPDV = [];
   let finalizandoVendaPDV = false;
+  let descontoPDV = 0;
 
   function carregarPDV() {
     renderizarCarrinhoPDV();
@@ -4104,6 +4138,30 @@ let auditoriaCarregada = [];
     renderizarCarrinhoPDV();
   }
 
+  function subtotalCarrinhoPDV() {
+
+    return carrinhoPDV.reduce(function(soma, item){
+
+        return soma + Number(item.subtotal || 0);
+
+    },0);
+
+}
+
+function totalCarrinhoPDV(){
+
+    const subtotal = subtotalCarrinhoPDV();
+
+    if(descontoPDV > subtotal){
+
+        descontoPDV = subtotal;
+
+    }
+
+    return subtotal - descontoPDV;
+
+}
+
   function renderizarCarrinhoPDV() {
     const area = document.getElementById('pdv-carrinho'); if (!area) return;
     if (!carrinhoPDV.length) area.innerHTML = '<div class="pdv-vazio">Nenhum produto adicionado.</div>';
@@ -4112,16 +4170,62 @@ let auditoriaCarregada = [];
       const acoes = i.tipoVenda === 'UNIDADE' ? '<button onclick="alterarQuantidadePDV('+idx+',-1)">−</button><button onclick="alterarQuantidadePDV('+idx+',1)">+</button>' : '';
       return '<div class="pdv-item"><div><div class="pdv-item-nome">'+escaparHtmlComanda(i.nome)+'</div><div class="pdv-item-info">'+info+'</div></div><div class="pdv-item-total">'+formatarMoedaDashboard(i.subtotal)+'</div><div class="pdv-item-acoes">'+acoes+'<button class="pdv-remover" onclick="removerItemPDV('+idx+')">✕</button></div></div>';
     }).join('');
-    const total = carrinhoPDV.reduce(function(s,i){ return s + Number(i.subtotal || 0); },0);
-    document.getElementById('pdv-total').textContent = formatarMoedaDashboard(total);
+    
+    const subtotal = carrinhoPDV.reduce(function(s,i){
+    return s + Number(i.subtotal || 0);
+},0);
+
+if (descontoPDV > subtotal) {
+    descontoPDV = subtotal;
+}
+
+const total = subtotal - descontoPDV;
+
+document.getElementById('pdv-subtotal').textContent =
+    formatarMoedaDashboard(subtotal);
+
+document.getElementById('pdv-desconto').textContent =
+    formatarMoedaDashboard(descontoPDV);
+
+document.getElementById('pdv-total').textContent =
+    formatarMoedaDashboard(total);
     document.getElementById('pdv-btn-pagar').disabled = !carrinhoPDV.length;
     document.getElementById('pdv-btn-limpar').style.display = carrinhoPDV.length ? 'block' : 'none';
   }
 
+  function editarDescontoPDV() {
+
+    const atual = descontoPDV.toFixed(2).replace('.', ',');
+
+    const valor = prompt(
+        'Informe o desconto:',
+        atual
+    );
+
+    if (valor === null) {
+        return;
+    }
+
+    let desconto = Number(
+        String(valor)
+            .replace(/\./g,'')
+            .replace(',', '.')
+    );
+
+    if (isNaN(desconto) || desconto < 0) {
+        desconto = 0;
+    }
+
+    descontoPDV = desconto;
+
+    renderizarCarrinhoPDV();
+
+}
+
   function limparVendaPDV() {
     if (!carrinhoPDV.length) return;
     if (!confirm(origemComandaPDV ? 'Sair do pagamento desta comanda? A comanda continuará aguardando pagamento.' : 'Cancelar a venda atual e remover todos os itens?')) return;
-    carrinhoPDV = []; origemComandaPDV = null; atualizarOrigemPDV(); renderizarCarrinhoPDV(); mostrarNotificacao('Venda removida do PDV.', 'sucesso');
+    carrinhoPDV = []; descontoPDV = 0; origemComandaPDV = null; atualizarOrigemPDV(); renderizarCarrinhoPDV(); mostrarNotificacao('Venda removida do PDV.', 'sucesso');
   }
 
   function irPagamentoPDV() {
@@ -4171,7 +4275,19 @@ let auditoriaCarregada = [];
       }
       mostrarNotificacao('Venda '+res.idVenda+' finalizada com sucesso.', 'sucesso'); carregarDashboard();
     }).withFailureHandler(function(erro){ finalizandoVendaPDV=false; botao.textContent='Finalizar venda'; renderizarPagamentosPDV(false); mostrarNotificacao(erro.message||'Erro ao finalizar venda.','erro'); })
-    .finalizarVendaPDV({itens:carrinhoPDV,pagamentos:pagamentosPDV,idComanda:origemComandaPDV?origemComandaPDV.id:null});
+    .finalizarVendaPDV({
+
+    itens: carrinhoPDV,
+
+    pagamentos: pagamentosPDV,
+
+    desconto: descontoPDV,
+
+    idComanda: origemComandaPDV
+        ? origemComandaPDV.id
+        : null
+
+});
   }
   function carregarComandaNoPDV(comanda){
     origemComandaPDV={id:comanda.id,mesa:comanda.mesa,nomeCliente:comanda.nomeCliente||''};pagamentosPDV = [];
