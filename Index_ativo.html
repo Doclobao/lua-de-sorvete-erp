@@ -4850,7 +4850,11 @@ function fecharModalAbrirCaixaFora(event){
 
         fecharModalAbrirCaixa();
 
-    }function abrirModalAbrirCaixa(){
+    }
+
+}
+
+function abrirModalAbrirCaixa(){
 
     google.script.run
         .withSuccessHandler(function(caixa){
@@ -4869,9 +4873,7 @@ function fecharModalAbrirCaixaFora(event){
             fecharModalCaixa();
 
             document.getElementById("caixa-operador").value = "";
-
             document.getElementById("caixa-valor").value = "";
-
             document.getElementById("caixa-observacao").value = "";
 
             document
@@ -4880,9 +4882,12 @@ function fecharModalAbrirCaixaFora(event){
                 .add("ativo");
 
         })
-        .obterStatusCaixa();
+        .withFailureHandler(function(erro){
 
-}
+            alert(erro.message || "Erro ao consultar o caixa.");
+
+        })
+        .obterStatusCaixa();
 
 }
 
@@ -5126,11 +5131,7 @@ function movimentacaoCaixa(){
 
 }
 
-function fecharCaixa(){
 
-    alert("Em desenvolvimento");
-
-}
 // ======================================================
 // HISTÓRICO DE VENDAS
 // BLOCO 3.1
