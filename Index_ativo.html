@@ -732,6 +732,49 @@ min-height:0;
 
 /* PDV PAGAMENTO - ETAPA 2 */
 .pdv-origem{display:none;background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;padding:10px 14px;border-radius:9px;margin-bottom:14px;font-weight:800}.pdv-origem.ativo{display:block}.pdv-pag-total{background:#f8fafc;border-radius:10px;padding:16px;text-align:center;margin-bottom:16px}.pdv-pag-total span{display:block;color:#6b7280;font-size:12px}.pdv-pag-total strong{font-size:30px}.pdv-formas{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}.pdv-forma-btn{border:1px solid #d1d5db;background:#fff;border-radius:8px;padding:10px 6px;cursor:pointer;font-weight:800}.pdv-forma-btn:hover{border-color:#2563eb;background:#eff6ff}.pdv-pagamentos-lista{max-height:230px;overflow:auto;margin-bottom:12px}.pdv-pagamento-linha{display:grid;grid-template-columns:1fr 130px auto;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid #e5e7eb}.pdv-pagamento-linha input{margin:0}.pdv-pagamento-remover{border:0;background:#fef2f2;color:#dc2626;border-radius:7px;padding:9px;cursor:pointer}.pdv-pag-resumo{background:#f8fafc;border-radius:9px;padding:12px;margin-bottom:14px}.pdv-pag-resumo div{display:flex;justify-content:space-between;margin:5px 0}.pdv-restante-ok{color:#16a34a;font-weight:900}.pdv-restante-pendente{color:#dc2626;font-weight:900}.pdv-finalizar{background:#16a34a;color:#fff}.pdv-finalizar:disabled{opacity:.5;cursor:not-allowed}@media(max-width:520px){.pdv-formas{grid-template-columns:repeat(2,1fr)}.pdv-pagamento-linha{grid-template-columns:1fr 110px auto}}
+.pdv-status-caixa{
+
+    display:flex;
+    align-items:center;
+    gap:15px;
+
+    padding:14px 18px;
+
+    border-radius:12px;
+
+    margin-bottom:18px;
+
+}
+
+.pdv-status-caixa.aberto{
+
+    background:#e8f8ef;
+    border:1px solid #9ed9b3;
+
+}
+
+.pdv-status-caixa.fechado{
+
+    background:#fdecec;
+    border:1px solid #efb0b0;
+
+}
+
+#pdv-status-caixa-icone{
+
+    font-size:28px;
+
+}
+
+#pdv-status-caixa strong{
+
+    display:block;
+
+    font-size:16px;
+
+    margin-bottom:4px;
+
+}
 
 /* COMANDAS V4 — transferência por botão e arrastar/soltar */
 .comanda-item[draggable="true"]{cursor:grab}.comanda-item.arrastando{opacity:.45;background:#eff6ff}.comanda-transferir{border:0;border-radius:6px;padding:6px 8px;cursor:pointer;background:#f0fdf4;color:#15803d;font-weight:800}.comanda-card.destino-transferencia{border:2px dashed #60a5fa;background:#eff6ff;transform:translateY(-1px)}.comanda-card.destino-transferencia.sobre{border-color:#2563eb;background:#dbeafe;box-shadow:0 0 0 3px rgba(37,99,235,.12)}.transferencia-resumo{background:#f8fafc;border:1px solid #e5e7eb;border-radius:10px;padding:12px;margin-bottom:14px}.transferencia-resumo strong{display:block;margin-bottom:4px}.transferencia-seta{color:#2563eb;font-weight:900;margin:8px 0}.transferencia-opcoes{display:flex;gap:8px;margin:10px 0 14px}.transferencia-opcoes button{flex:1;border:1px solid #d1d5db;background:#fff;border-radius:8px;padding:10px;cursor:pointer;font-weight:800}.transferencia-opcoes button.ativa{border-color:#2563eb;background:#eff6ff;color:#1d4ed8}.transferencia-campo{display:none}.transferencia-campo.ativo{display:block}.transferencia-campo label{display:block;font-size:12px;font-weight:800;margin-bottom:6px}.transferencia-campo input,.transferencia-campo select{width:100%;padding:11px;border:1px solid #d1d5db;border-radius:8px;margin-bottom:14px;background:#fff}.comanda-arraste-ajuda{font-size:11px;color:#6b7280;margin-top:4px}
@@ -1363,6 +1406,27 @@ min-height:0;
         <div><h1>PDV</h1><p>Venda rápida de balcão da Lua de Sorvete.</p></div>
       </div>
       <div id="pdv-origem" class="pdv-origem"></div>
+      <div id="pdv-status-caixa" class="pdv-status-caixa fechado">
+
+    <span id="pdv-status-caixa-icone">🔴</span>
+
+    <div>
+
+        <strong id="pdv-status-caixa-titulo">
+
+            Caixa Fechado
+
+        </strong>
+
+        <div id="pdv-status-caixa-texto">
+
+            É necessário abrir o caixa para realizar vendas.
+
+        </div>
+
+    </div>
+
+</div>
       <div class="pdv-layout">
         <div class="pdv-painel">
           <div class="pdv-painel-topo"><h2>Produtos</h2><p>Clique para adicionar à venda.</p></div>
@@ -1373,7 +1437,7 @@ min-height:0;
           <div class="pdv-painel-topo"><h2>🧾 Itens da venda</h2><p>Venda atual</p></div>
           <div id="pdv-carrinho" class="pdv-carrinho"><div class="pdv-vazio">Nenhum produto adicionado.</div></div>
           <div class="pdv-resumo">
-            <div class="pdv-resumo">
+            
 
     <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
 
@@ -1478,6 +1542,140 @@ min-height:0;
         </div>
       </div>
     </div>
+    <div id="pdv-modal-desconto" class="pdv-modal-overlay" onclick="fecharModalDescontoPDVFora(event)">
+
+    <div class="pdv-modal" onclick="event.stopPropagation()">
+
+        <h2>Desconto da Venda</h2>
+
+        <p>Informe o valor do desconto.</p>
+
+        <div class="pdv-previa">
+
+            <div style="display:flex;justify-content:space-between;">
+                <span>Subtotal</span>
+                <strong id="pdv-desc-subtotal">R$ 0,00</strong>
+            </div>
+
+            <div style="display:flex;justify-content:space-between;margin-top:8px;">
+                <span>Desconto</span>
+                <strong id="pdv-desc-desconto">R$ 0,00</strong>
+            </div>
+
+            <div style="display:flex;justify-content:space-between;margin-top:12px;font-size:18px;">
+                <span>Total</span>
+                <strong id="pdv-desc-total">R$ 0,00</strong>
+            </div>
+
+        </div>
+
+        <input
+            id="pdv-input-desconto"
+            type="text"
+            inputmode="decimal"
+            placeholder="0,00"
+            oninput="atualizarResumoDescontoPDV()"
+            onkeydown="if(event.key==='Enter') aplicarDescontoPDV();">
+
+        <div class="pdv-modal-acoes">
+
+            <button
+                class="pdv-modal-cancelar"
+                onclick="fecharModalDescontoPDV()">
+
+                Cancelar
+
+            </button>
+
+            <button
+                class="pdv-modal-confirmar"
+                onclick="aplicarDescontoPDV()">
+
+                Aplicar
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ==========================================
+     MODAL ABRIR CAIXA
+========================================== -->
+
+<div id="modal-abrir-caixa"
+     class="pdv-modal-overlay"
+     onclick="fecharModalAbrirCaixaFora(event)">
+
+    <div class="pdv-modal"
+         style="max-width:500px"
+         onclick="event.stopPropagation()">
+
+        <h2>🏦 Abrir Caixa</h2>
+
+        <p>
+            Informe os dados para iniciar o caixa.
+        </p>
+
+        <div style="margin-top:20px;">
+
+            <label>Operador</label>
+
+            <input
+                id="caixa-operador"
+                type="text"
+                placeholder="Nome do operador">
+
+        </div>
+
+        <div style="margin-top:15px;">
+
+            <label>Troco Inicial</label>
+
+            <input
+                id="caixa-valor"
+                type="text"
+                inputmode="decimal"
+                placeholder="0,00">
+
+        </div>
+
+        <div style="margin-top:15px;">
+
+            <label>Observação</label>
+
+            <textarea
+                id="caixa-observacao"
+                rows="3"
+                placeholder="Opcional"></textarea>
+
+        </div>
+
+        <div class="pdv-modal-acoes">
+
+            <button
+                class="pdv-modal-cancelar"
+                onclick="fecharModalAbrirCaixa()">
+
+                Cancelar
+
+            </button>
+
+            <button
+                class="pdv-modal-confirmar"
+                onclick="confirmarAberturaCaixa()">
+
+                Abrir Caixa
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
     <!-- =====================================================
      MODAL DO CAIXA
 ===================================================== -->
@@ -1496,7 +1694,7 @@ min-height:0;
 
             <button
                 class="btn btn-primario"
-                onclick="abrirCaixa()">
+                onclick="abrirModalAbrirCaixa()">
 
                 🔓 Abrir Caixa
 
@@ -1527,6 +1725,50 @@ min-height:0;
                 onclick="fecharModalCaixa()">
 
                 Fechar
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ==========================================
+     MODAL FECHAR CAIXA
+========================================== -->
+
+<div id="modal-fechar-caixa"
+     class="pdv-modal-overlay"
+     onclick="fecharModalFecharCaixaFora(event)">
+
+    <div class="pdv-modal"
+         style="max-width:650px"
+         onclick="event.stopPropagation()">
+
+        <h2>🔒 Fechamento do Caixa</h2>
+
+        <div id="fechamento-caixa-resumo">
+
+            Carregando...
+
+        </div>
+
+        <div class="pdv-modal-acoes">
+
+            <button
+                class="pdv-modal-cancelar"
+                onclick="fecharModalFecharCaixa()">
+
+                Cancelar
+
+            </button>
+
+            <button
+                class="pdv-modal-confirmar"
+                onclick="confirmarFechamentoCaixa()">
+
+                Fechar Caixa
 
             </button>
 
@@ -4047,6 +4289,7 @@ let auditoriaCarregada = [];
 
   function carregarPDV() {
     renderizarCarrinhoPDV();
+    atualizarStatusCaixa();
     const lista = document.getElementById('pdv-lista-produtos');
     if (!lista) return;
     if (produtosPDV.length) { renderizarProdutosPDV(produtosPDV); return; }
@@ -4193,30 +4436,103 @@ document.getElementById('pdv-total').textContent =
     document.getElementById('pdv-btn-limpar').style.display = carrinhoPDV.length ? 'block' : 'none';
   }
 
-  function editarDescontoPDV() {
+  function editarDescontoPDV(){
 
-    const atual = descontoPDV.toFixed(2).replace('.', ',');
+    const subtotal = subtotalCarrinhoPDV();
 
-    const valor = prompt(
-        'Informe o desconto:',
-        atual
-    );
+    document.getElementById("pdv-desc-subtotal").textContent =
+        formatarMoedaDashboard(subtotal);
 
-    if (valor === null) {
-        return;
+    document.getElementById("pdv-desc-desconto").textContent =
+        formatarMoedaDashboard(descontoPDV);
+
+    document.getElementById("pdv-desc-total").textContent =
+        formatarMoedaDashboard(totalCarrinhoPDV());
+
+    const campo =
+        document.getElementById("pdv-input-desconto");
+
+    campo.value =
+        descontoPDV.toFixed(2).replace(".", ",");
+
+    document
+        .getElementById("pdv-modal-desconto")
+        .classList
+        .add("ativo");
+
+    setTimeout(function(){
+
+        campo.focus();
+        campo.select();
+
+    },100);
+
+}
+function fecharModalDescontoPDV(){
+
+    document
+        .getElementById("pdv-modal-desconto")
+        .classList
+        .remove("ativo");
+
+}
+
+function fecharModalDescontoPDVFora(event){
+
+    if(event.target.id==="pdv-modal-desconto"){
+        fecharModalDescontoPDV();
     }
 
-    let desconto = Number(
-        String(valor)
-            .replace(/\./g,'')
-            .replace(',', '.')
-    );
+}
 
-    if (isNaN(desconto) || desconto < 0) {
+function atualizarResumoDescontoPDV(){
+
+    const subtotal = subtotalCarrinhoPDV();
+
+    let desconto =
+        converterValorDigitado(
+            document.getElementById("pdv-input-desconto").value
+        );
+
+    if(desconto < 0){
         desconto = 0;
     }
 
+    if(desconto > subtotal){
+        desconto = subtotal;
+    }
+
+    document.getElementById("pdv-desc-subtotal").textContent =
+        formatarMoedaDashboard(subtotal);
+
+    document.getElementById("pdv-desc-desconto").textContent =
+        formatarMoedaDashboard(desconto);
+
+    document.getElementById("pdv-desc-total").textContent =
+        formatarMoedaDashboard(subtotal - desconto);
+
+}
+
+function aplicarDescontoPDV(){
+
+    const subtotal = subtotalCarrinhoPDV();
+
+    let desconto =
+        converterValorDigitado(
+            document.getElementById("pdv-input-desconto").value
+        );
+
+    if(desconto < 0){
+        desconto = 0;
+    }
+
+    if(desconto > subtotal){
+        desconto = subtotal;
+    }
+
     descontoPDV = desconto;
+
+    fecharModalDescontoPDV();
 
     renderizarCarrinhoPDV();
 
@@ -4238,7 +4554,7 @@ document.getElementById('pdv-total').textContent =
     document.getElementById('pdv-modal-pagamento').classList.add('ativo');
   }
 
-  function totalCarrinhoPDV(){ return carrinhoPDV.reduce(function(s,i){return s+Number(i.subtotal||0);},0); }
+  
   function fecharPagamentoPDV(){ if(finalizandoVendaPDV)return; document.getElementById('pdv-modal-pagamento').classList.remove('ativo'); }
   function fecharPagamentoPDVFora(e){ if(e.target && e.target.id==='pdv-modal-pagamento') fecharPagamentoPDV(); }
   function adicionarPagamentoPDV(forma, valorInicial){
@@ -4296,6 +4612,157 @@ document.getElementById('pdv-total').textContent =
   }
   function atualizarOrigemPDV(){ const el=document.getElementById('pdv-origem'); if(!el)return; if(origemComandaPDV){el.textContent='🧾 Pagamento da Mesa '+String(origemComandaPDV.mesa).padStart(2,'0')+' · '+(origemComandaPDV.nomeCliente||'Comanda '+origemComandaPDV.id);el.classList.add('ativo');}else{el.textContent='';el.classList.remove('ativo');} }
 
+  //=====================================================
+// MODAL ABRIR CAIXA
+//=====================================================
+
+
+
+function fecharModalAbrirCaixa(){
+
+    document
+        .getElementById("modal-abrir-caixa")
+        .classList
+        .remove("ativo");
+
+}
+
+function fecharModalAbrirCaixaFora(event){
+
+    if(event.target.id==="modal-abrir-caixa"){
+
+        fecharModalAbrirCaixa();
+
+    }function abrirModalAbrirCaixa(){
+
+    google.script.run
+        .withSuccessHandler(function(caixa){
+
+            if(caixa.aberto){
+
+                alert(
+                    "Já existe um caixa aberto por " +
+                    caixa.operador
+                );
+
+                return;
+
+            }
+
+            fecharModalCaixa();
+
+            document.getElementById("caixa-operador").value = "";
+
+            document.getElementById("caixa-valor").value = "";
+
+            document.getElementById("caixa-observacao").value = "";
+
+            document
+                .getElementById("modal-abrir-caixa")
+                .classList
+                .add("ativo");
+
+        })
+        .obterStatusCaixa();
+
+}
+
+}
+
+function confirmarAberturaCaixa(){
+
+    const operador =
+        document.getElementById("caixa-operador").value.trim();
+
+    const valor =
+        converterValorDigitado(
+            document.getElementById("caixa-valor").value
+        );
+
+    const observacao =
+        document.getElementById("caixa-observacao").value.trim();
+
+    google.script.run
+        .withSuccessHandler(function(retorno){
+
+            fecharModalAbrirCaixa();
+
+            alert(retorno.mensagem);
+            atualizarStatusCaixa();
+
+            
+        })
+        .withFailureHandler(function(erro){
+
+            alert(erro.message);
+
+        })
+        .abrirCaixa(
+            operador,
+            valor,
+            observacao
+        );
+
+}
+
+function atualizarStatusCaixa(){
+
+    google.script.run
+        .withSuccessHandler(function(caixa){
+
+            const painel = document.getElementById("pdv-status-caixa");
+
+            const icone = document.getElementById("pdv-status-caixa-icone");
+
+            const titulo = document.getElementById("pdv-status-caixa-titulo");
+
+            const texto = document.getElementById("pdv-status-caixa-texto");
+
+            if(!painel) return;
+
+            if(caixa.aberto){
+
+                painel.classList.remove("fechado");
+                painel.classList.add("aberto");
+
+                icone.textContent = "🟢";
+
+                titulo.textContent = "Caixa Aberto";
+
+                texto.textContent =
+                    "Operador: " +
+                    caixa.operador +
+                    " • Troco Inicial: R$ " +
+                    Number(caixa.valorInicial).toFixed(2);
+                    document.getElementById("pdv-btn-pagar").disabled =
+    carrinhoPDV.length === 0;
+    document.getElementById("pdv-lista-produtos")
+    .style.pointerEvents = "auto";
+
+            }else{
+
+                painel.classList.remove("aberto");
+                painel.classList.add("fechado");
+
+                icone.textContent = "🔴";
+
+                titulo.textContent = "Caixa Fechado";
+
+                texto.textContent =
+                    "É necessário abrir o caixa para realizar vendas.";
+                    document.getElementById("pdv-btn-pagar").disabled = true;
+
+document.getElementById("pdv-lista-produtos")
+    .style.pointerEvents = "none";
+
+            }
+
+        })
+        .obterStatusCaixa();
+        
+
+}
+
 //=====================================================
 // CONTROLE DE CAIXA
 //=====================================================
@@ -4329,10 +4796,110 @@ function fecharModalCaixaFora(event){
     }
 
 }
+function abrirModalFecharCaixa(html){
 
-function abrirCaixa(){
+    document.getElementById(
+        "fechamento-caixa-resumo"
+    ).innerHTML = html;
 
-    alert("Em desenvolvimento");
+    document
+        .getElementById("modal-fechar-caixa")
+        .classList
+        .add("ativo");
+
+}
+
+function fecharModalFecharCaixa(){
+
+    document
+        .getElementById("modal-fechar-caixa")
+        .classList
+        .remove("ativo");
+
+}
+
+function fecharModalFecharCaixaFora(event){
+
+    if(event.target.id==="modal-fechar-caixa"){
+
+        fecharModalFecharCaixa();
+
+    }
+
+}
+
+function confirmarFechamentoCaixa(){
+
+    alert(
+        "Na próxima etapa faremos o fechamento definitivo."
+    );
+
+}
+
+function fecharCaixa(){
+
+    google.script.run
+        .withSuccessHandler(function(caixa){
+
+            if(!caixa.aberto){
+
+                alert("Não existe caixa aberto.");
+
+                return;
+
+            }
+
+            const html = `
+    <div style="line-height:1.8">
+
+        <p><strong>Operador:</strong> ${caixa.operador}</p>
+
+        <p><strong>Data de abertura:</strong> ${caixa.dataAbertura}</p>
+
+        <p><strong>Valor inicial:</strong>
+        R$ ${Number(caixa.valorInicial).toFixed(2)}</p>
+
+        <hr>
+
+        <p>
+            Nesta primeira versão do fechamento,
+            estamos exibindo apenas os dados do caixa.
+
+            <br><br>
+
+            Nas próximas etapas serão exibidos:
+
+            <br>✔ Total de vendas
+
+            <br>✔ Dinheiro
+
+            <br>✔ PIX
+
+            <br>✔ Cartão
+
+            <br>✔ Sangrias
+
+            <br>✔ Suprimentos
+
+            <br>✔ Valor esperado
+
+        </p>
+
+    </div>
+`;
+
+abrirModalFecharCaixa(html);
+
+        })
+        .withFailureHandler(function(erro){
+
+            alert(
+                erro.message ||
+                "Erro ao consultar o caixa."
+            );
+
+        })
+        .obterStatusCaixa();
 
 }
 
@@ -9533,6 +10100,64 @@ function escaparSeletorFinanceiro(valor) {
                 </button>
 
             </div>
+
+        </div>
+
+    </div>
+
+</div>
+<div id="pdv-modal-desconto" class="pdv-modal-overlay" onclick="fecharModalDescontoPDVFora(event)">
+
+    <div class="pdv-modal" onclick="event.stopPropagation()">
+
+        <h2>Desconto da Venda</h2>
+
+        <p>Informe o valor do desconto.</p>
+
+        <div class="pdv-previa">
+
+            <div style="display:flex;justify-content:space-between;">
+                <span>Subtotal</span>
+                <strong id="pdv-desc-subtotal">R$ 0,00</strong>
+            </div>
+
+            <div style="display:flex;justify-content:space-between;margin-top:8px;">
+                <span>Desconto</span>
+                <strong id="pdv-desc-desconto">R$ 0,00</strong>
+            </div>
+
+            <div style="display:flex;justify-content:space-between;margin-top:12px;font-size:18px;">
+                <span>Total</span>
+                <strong id="pdv-desc-total">R$ 0,00</strong>
+            </div>
+
+        </div>
+
+        <input
+            id="pdv-input-desconto"
+            type="text"
+            inputmode="decimal"
+            placeholder="0,00"
+            oninput="atualizarResumoDescontoPDV()"
+            onkeydown="if(event.key==='Enter') aplicarDescontoPDV();">
+
+        <div class="pdv-modal-acoes">
+
+            <button
+                class="pdv-modal-cancelar"
+                onclick="fecharModalDescontoPDV()">
+
+                Cancelar
+
+            </button>
+
+            <button
+                class="pdv-modal-confirmar"
+                onclick="aplicarDescontoPDV()">
+
+                Aplicar
+
+            </button>
 
         </div>
 
