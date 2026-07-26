@@ -5707,3 +5707,26 @@ function testePainel() {
   Logger.log(JSON.stringify(painel, null, 2));
   Logger.log('==========================');
 }
+//=====================================================
+// RETORNA O STATUS DO CAIXA
+//=====================================================
+
+function obterStatusCaixa(){
+
+    const caixa = verificarCaixaAberto();
+
+    return {
+
+        aberto: caixa.aberto === true,
+
+        operador: caixa.operador || "",
+
+        valorInicial: Number(caixa.valorInicial || 0),
+
+        dataAbertura: caixa.dataAbertura || "",
+
+        idSessao: caixa.idSessao || ""
+
+    };
+
+}
