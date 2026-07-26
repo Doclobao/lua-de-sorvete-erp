@@ -1297,6 +1297,12 @@ min-height:0;
 >
   📋 Histórico de vendas
 </div>
+<div
+  class="menu-item"
+  onclick="abrirPagina('venda-externa', this)"
+>
+  📦 Venda Externa
+</div>
 
     <div
       class="menu-item"
@@ -3089,6 +3095,217 @@ min-height:0;
     </table>
 
   </div>
+
+</section>
+
+<!-- =====================================================
+     VENDA EXTERNA
+====================================================== -->
+
+<section
+  id="pagina-venda-externa"
+  class="pagina"
+>
+
+  <div class="titulo">
+
+    <h1>Venda Externa</h1>
+
+    <p>
+      Lançamento de vendas realizadas por iFood, WhatsApp, telefone e outros canais.
+    </p>
+
+  </div>
+
+  <div class="config-card">
+
+  <div
+    style="
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:15px;
+    "
+  >
+
+    <div>
+
+      <label>Data</label>
+
+      <input
+        type="date"
+        id="ve-data"
+      >
+
+    </div>
+
+    <div>
+
+      <label>Origem</label>
+
+      <select id="ve-origem">
+
+        <option>iFood</option>
+
+        <option>WhatsApp</option>
+
+        <option>Telefone</option>
+
+        <option>Site</option>
+
+        <option>Marketplace</option>
+
+        <option>Outro</option>
+
+      </select>
+
+    </div>
+
+    <div>
+
+      <label>Forma de pagamento</label>
+
+      <select id="ve-pagamento">
+
+        <option>PIX</option>
+
+        <option>DINHEIRO</option>
+
+        <option>CRÉDITO</option>
+
+        <option>DÉBITO</option>
+
+      </select>
+
+    </div>
+
+    <div>
+
+      <label>Observação</label>
+
+      <input
+        id="ve-observacao"
+        type="text"
+        placeholder="Observações da venda"
+      >
+
+    </div>
+
+  </div>
+
+</div>
+
+<br>
+
+<div class="config-card">
+
+    <h2>Produtos da venda</h2>
+
+    <br>
+
+    <input
+    id="ve-pesquisa-produto"
+    type="text"
+    placeholder="Digite o nome do produto..."
+    autocomplete="off"
+    oninput="pesquisarProdutoVendaExterna()"
+>
+
+    <div
+        id="ve-lista-produtos"
+        style="
+            display:none;
+            border:1px solid #ddd;
+            border-radius:8px;
+            max-height:250px;
+            overflow:auto;
+            margin-top:5px;
+            background:#fff;
+        "
+    ></div>
+
+    <br>
+
+    <div class="tabela-container">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>Produto</th>
+
+                    <th>Preço Cadastro</th>
+
+                    <th>Preço Venda</th>
+
+                    <th>Qtd</th>
+
+                    <th>Subtotal</th>
+
+                    <th></th>
+
+                </tr>
+
+            </thead>
+
+            <tbody id="ve-itens">
+
+                <tr>
+
+                    <td
+                        colspan="6"
+                        class="mensagem-vazia"
+                    >
+                        Nenhum produto adicionado.
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <br>
+
+    <div
+        style="
+            display:flex;
+            justify-content:flex-end;
+            gap:40px;
+            font-size:18px;
+            font-weight:bold;
+        "
+    >
+
+        <div>
+
+            Total:
+
+            <span id="ve-total">
+
+                R$ 0,00
+
+            </span>
+
+        </div
+
+    </div>
+
+    <br>
+
+    <button
+        class="btn btn-primario"
+        id="btn-salvar-venda-externa"
+    >
+
+        💾 Salvar Venda
+
+    </button>
+
+</div>
 
 </section>
 
@@ -4929,7 +5146,301 @@ const HISTORICO_ITENS_POR_PAGINA = 20;
 
 let historicoCarregando = false;
 
+// ======================================================
+// VENDA EXTERNA
+// ======================================================
 
+let vendaExternaItens = [];
+
+// ======================================================
+// VENDA EXTERNA
+// ADICIONAR PRODUTO
+// ======================================================
+
+function adicionarProdutoVendaExterna(idProduto){
+
+    const produto = produtosPDV.find(function(item){
+
+        return String(item.id) === String(idProduto);
+
+    });
+
+    if(!produto){
+        return;
+    }
+
+    const existente =
+        vendaExternaItens.find(function(item){
+
+            return String(item.idProduto) === String(produto.id);
+
+        });
+
+    if(existente){
+
+        existente.quantidade++;
+
+    }else{
+
+        vendaExternaItens.push({
+
+            idProduto: produto.id,
+
+            nome: produto.nome,
+
+            precoCadastro:
+                Number(
+                    produto.preco || 0
+                ),
+
+            precoVenda:
+                Number(
+                    produto.preco || 0
+                ),
+
+            quantidade: 1,
+
+            subtotal:
+                Number(
+                    produto.preco || 0
+                )
+
+        });
+
+    }
+
+    renderizarVendaExterna();
+
+}
+
+// ======================================================
+// RENDERIZAR VENDA EXTERNA
+// ======================================================
+
+function renderizarVendaExterna(){
+
+    const tbody =
+        document.getElementById("ve-itens");
+
+    if(!tbody){
+        return;
+    }
+
+    tbody.innerHTML = "";
+
+    let total = 0;
+
+    vendaExternaItens.forEach(function(item, indice){
+
+        item.subtotal =
+            Number(item.precoVenda) *
+            Number(item.quantidade);
+
+        total += item.subtotal;
+
+        tbody.innerHTML += `
+
+<tr>
+
+<td>
+
+${item.nome}
+
+</td>
+
+<td>
+
+${formatarMoeda(item.precoCadastro)}
+
+</td>
+
+<td>
+
+<input
+
+type="number"
+
+step="0.01"
+
+value="${item.precoVenda}"
+
+onchange="alterarPrecoVendaExterna(${indice},this.value)"
+
+>
+
+</td>
+
+<td>
+
+<input
+
+type="number"
+
+min="1"
+
+value="${item.quantidade}"
+
+onchange="alterarQuantidadeVendaExterna(${indice},this.value)"
+
+>
+
+</td>
+
+<td>
+
+${formatarMoeda(item.subtotal)}
+
+</td>
+
+<td>
+
+<button
+onclick="removerItemVendaExterna(${indice})">
+
+🗑
+
+</button>
+
+</td>
+
+</tr>
+
+`;
+
+    });
+
+    document.getElementById("ve-total").textContent =
+        formatarMoeda(total);
+
+}
+
+// ======================================================
+// ALTERAÇÕES
+// ======================================================
+
+function alterarPrecoVendaExterna(indice, valor){
+
+    vendaExternaItens[indice].precoVenda =
+        Number(valor);
+
+    renderizarVendaExterna();
+
+}
+
+function alterarQuantidadeVendaExterna(indice, valor){
+
+    valor = Number(valor);
+
+    if(valor < 1){
+
+        valor = 1;
+
+    }
+
+    vendaExternaItens[indice].quantidade =
+        valor;
+
+    renderizarVendaExterna();
+
+}
+
+function removerItemVendaExterna(indice){
+
+    vendaExternaItens.splice(indice,1);
+
+    renderizarVendaExterna();
+
+}
+
+// ======================================================
+// PESQUISA DE PRODUTOS
+// ======================================================
+
+function pesquisarProdutoVendaExterna(){
+
+    const pesquisa =
+        document
+            .getElementById("ve-pesquisa-produto")
+            .value
+            .trim()
+            .toLowerCase();
+
+    const lista =
+        document.getElementById(
+            "ve-lista-produtos"
+        );
+
+    if(!lista){
+        return;
+    }
+
+    lista.innerHTML = "";
+
+    if(pesquisa.length < 2){
+
+        lista.style.display = "none";
+
+        return;
+    }
+
+    const encontrados = produtosPDV.filter(function(produto){
+
+        return String(produto.nome || "")
+            .toLowerCase()
+            .includes(pesquisa);
+
+    });
+
+    if(!encontrados.length){
+
+        lista.style.display = "none";
+
+        return;
+    }
+
+    encontrados.forEach(function(produto){
+
+        lista.innerHTML += `
+
+<div
+class="ve-item-pesquisa"
+onclick="selecionarProdutoVendaExterna('${produto.id}')">
+
+<strong>${produto.nome}</strong>
+
+<br>
+
+<small>
+
+${formatarMoeda(
+    Number(produto.preco || 0)
+)}
+
+</small>
+
+</div>
+
+`;
+
+    });
+
+    lista.style.display = "block";
+
+}
+
+function selecionarProdutoVendaExterna(idProduto){
+
+    adicionarProdutoVendaExterna(idProduto);
+
+    document.getElementById(
+        "ve-pesquisa-produto"
+    ).value = "";
+
+    document.getElementById(
+        "ve-lista-produtos"
+    ).style.display = "none";
+
+}
 // ------------------------------------------------------
 // INICIALIZAÇÃO
 // ------------------------------------------------------
@@ -6136,6 +6647,8 @@ function imprimirVendaHistorico(id){
 
 }
 
+
+
 // ------------------------------------------------------
 // ATUALIZAR
 // ------------------------------------------------------
@@ -6209,6 +6722,11 @@ function atualizarHistorico() {
   }
   if (pagina === 'financeiro') {
 
+if (pagina === 'venda-externa') {
+
+    iniciarVendaExterna();
+
+}
   const agora = Date.now();
 
   const cacheFinanceiroValido =
