@@ -778,221 +778,7 @@
 
   /* COMANDAS V4 — transferência por botão e arrastar/soltar */
   .comanda-item[draggable="true"]{cursor:grab}.comanda-item.arrastando{opacity:.45;background:#eff6ff}.comanda-transferir{border:0;border-radius:6px;padding:6px 8px;cursor:pointer;background:#f0fdf4;color:#15803d;font-weight:800}.comanda-card.destino-transferencia{border:2px dashed #60a5fa;background:#eff6ff;transform:translateY(-1px)}.comanda-card.destino-transferencia.sobre{border-color:#2563eb;background:#dbeafe;box-shadow:0 0 0 3px rgba(37,99,235,.12)}.transferencia-resumo{background:#f8fafc;border:1px solid #e5e7eb;border-radius:10px;padding:12px;margin-bottom:14px}.transferencia-resumo strong{display:block;margin-bottom:4px}.transferencia-seta{color:#2563eb;font-weight:900;margin:8px 0}.transferencia-opcoes{display:flex;gap:8px;margin:10px 0 14px}.transferencia-opcoes button{flex:1;border:1px solid #d1d5db;background:#fff;border-radius:8px;padding:10px;cursor:pointer;font-weight:800}.transferencia-opcoes button.ativa{border-color:#2563eb;background:#eff6ff;color:#1d4ed8}.transferencia-campo{display:none}.transferencia-campo.ativo{display:block}.transferencia-campo label{display:block;font-size:12px;font-weight:800;margin-bottom:6px}.transferencia-campo input,.transferencia-campo select{width:100%;padding:11px;border:1px solid #d1d5db;border-radius:8px;margin-bottom:14px;background:#fff}.comanda-arraste-ajuda{font-size:11px;color:#6b7280;margin-top:4px}
-  /* =======================================================
-   VENDA EXTERNA NOVA
-=======================================================*/
-
-.ve-header{
-
-display:flex;
-justify-content:space-between;
-align-items:flex-end;
-gap:25px;
-margin-bottom:25px;
-
-}
-
-.ve-header-right{
-
-display:flex;
-gap:20px;
-flex-wrap:wrap;
-
-}
-
-.ve-campo{
-
-display:flex;
-flex-direction:column;
-gap:6px;
-
-}
-
-.ve-campo label{
-
-font-size:13px;
-font-weight:600;
-color:#666;
-
-}
-
-.ve-container{
-
-display:grid;
-grid-template-columns:62% 38%;
-gap:24px;
-
-}
-
-.ve-box{
-
-background:#FFF;
-border-radius:18px;
-padding:24px;
-box-shadow:0 4px 18px rgba(0,0,0,.08);
-
-}
-
-.ve-box h3{
-
-margin:0 0 20px;
-font-size:22px;
-
-}
-
-.ve-pesquisa{
-
-display:grid;
-grid-template-columns:1fr 220px;
-gap:15px;
-margin-bottom:20px;
-
-}
-
-.ve-pesquisa input{
-
-height:48px;
-padding:0 18px;
-border-radius:12px;
-border:1px solid #DDD;
-font-size:15px;
-
-}
-
-.ve-pesquisa select{
-
-height:48px;
-border-radius:12px;
-border:1px solid #DDD;
-padding:0 15px;
-
-}
-
-#ve-lista-produtos{
-
-display:flex;
-flex-direction:column;
-gap:18px;
-max-height:620px;
-overflow:auto;
-
-}
-
-.ve-card{
-
-border:1px solid #E5E7EB;
-border-radius:16px;
-padding:18px;
-transition:.25s;
-
-}
-
-.ve-card:hover{
-
-box-shadow:0 8px 18px rgba(0,0,0,.08);
-transform:translateY(-2px);
-
-}
-
-.ve-card h4{
-
-margin:0;
-font-size:18px;
-
-}
-
-.ve-card small{
-
-color:#777;
-
-}
-
-.ve-precos{
-
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:20px;
-margin:18px 0;
-
-}
-
-.ve-qtd{
-
-display:flex;
-align-items:center;
-gap:12px;
-
-}
-
-.ve-qtd button{
-
-width:34px;
-height:34px;
-border:none;
-border-radius:8px;
-cursor:pointer;
-font-size:20px;
-
-}
-
-.ve-add{
-
-background:#059669;
-color:white;
-border:none;
-padding:12px 22px;
-border-radius:10px;
-cursor:pointer;
-
-}
-
-.ve-resumo{
-
-margin-top:20px;
-display:flex;
-flex-direction:column;
-gap:16px;
-
-}
-
-.ve-total{
-
-font-size:34px;
-font-weight:bold;
-color:#059669;
-text-align:right;
-
-}
-.ve-box table{
-
-width:100%;
-
-}
-
-.ve-box thead{
-
-background:#F8FAFC;
-
-}
-
-.ve-box th{
-
-padding:16px;
-font-size:13px;
-
-}
-
-.ve-box td{
-
-padding:15px;
-
-}
-
-.ve-box tbody tr:hover{
-
-background:#F9FAFB;
-
-}
+  
   </style>
 
   <style>
@@ -1464,8 +1250,424 @@ background:#F9FAFB;
       }
 
   } 
+/* =====================================================
+   VENDA EXTERNA
+=====================================================*/
+
+.ve-conteudo{
+
+    display:grid;
+
+    grid-template-columns:1.2fr 1fr;
+
+    gap:22px;
+
+    margin-top:22px;
+
+    align-items:start;
+
+    max-width:1080px;
+
+}
+
+.ve-conteudo .config-card{
+
+    margin-bottom:0;
+
+}
+
+.ve-filtros{
+
+    display:flex;
+    gap:12px;
+    margin:18px 0;
+
+}
+
+#ve-pesquisa{
+
+    flex:1;
+    height:42px;
+
+    border:1px solid #d1d5db;
+    border-radius:8px;
+
+    padding:0 14px;
+
+    font-size:14px;
+
+}
+
+#ve-categoria{
+
+    width:220px;
+    height:42px;
+
+    border:1px solid #d1d5db;
+    border-radius:8px;
+
+    padding:0 10px;
+
+    background:#fff;
+
+}
+
+#ve-lista-produtos{
+
+    height:560px;
+
+    border:1px solid #e5e7eb;
+    border-radius:10px;
+
+    overflow-y:auto;
+
+    background:#fafafa;
+
+}
+
+.ve-itens{
+
+    height:560px;
+
+    border:1px solid #e5e7eb;
+    border-radius:10px;
+
+    overflow:auto;
+
+    background:#fff;
+
+}
+
+.ve-tabela{
+
+    width:100%;
+    border-collapse:collapse;
+
+}
+
+.ve-tabela th{
+
+    background:#f9fafb;
+
+    padding:14px;
+
+    border-bottom:1px solid #e5e7eb;
+
+    font-size:13px;
+
+    color:#6b7280;
+
+    text-align:center;
+
+}
+
+.ve-tabela td{
+
+    padding:14px;
+
+    border-bottom:1px solid #e5e7eb;
+
+    text-align:center;
+
+}
+
+.ve-vazio{
+
+    padding:80px 20px !important;
+
+    color:#9ca3af;
+
+    text-align:center;
+
+}
+
+.ve-resumo{
+
+    margin-top:20px;
+
+    padding:20px;
+
+    background:#fff;
+
+    border-radius:12px;
+
+    border:1px solid #e5e7eb;
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(4,1fr);
+
+    gap:16px;
+
+}
+
+.ve-resumo .campo{
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+.ve-resumo label{
+
+    font-size:13px;
+
+    font-weight:600;
+
+    margin-bottom:6px;
+
+}
+
+.ve-resumo input{
+
+    height:42px;
+
+    padding:8px 12px;
+
+}
+
+.ve-acoes{
+
+    grid-column:1/-1;
+
+    display:flex;
+
+    justify-content:flex-end;
+
+    margin-top:10px;
+
+}
+@media(max-width:1100px){
+
+    .ve-conteudo{
+
+        grid-template-columns:1fr;
+
+    }
+
+    #ve-categoria{
+
+        width:190px;
+
+    }
+
+}
+
+@media(max-width:700px){
+
+    .ve-filtros{
+
+        flex-direction:column;
+
+    }
+
+    #ve-categoria{
+
+        width:100%;
+
+    }
+
+}
+
+.ve-dados-grid{
+
+    display:grid;
+
+    grid-template-columns:
+        170px
+        220px
+        230px
+        300px;
+
+    gap:18px;
+
+    align-items:end;
+
+}
+
+#ve-observacao{
+
+    width:100%;
+
+    min-width:320px;
+
+}
 
 
+/* =====================================================
+   DADOS DA VENDA
+=====================================================*/
+
+.ve-dados{
+
+    display:grid;
+
+    grid-template-columns:
+        180px
+        190px
+        320px
+        minmax(7
+        420px,1fr);
+
+    gap:22px;
+
+    align-items:end;
+
+}
+
+.ve-dados .campo{
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+.ve-dados label{
+
+    font-size:13px;
+
+    font-weight:700;
+
+    color:#4b5563;
+
+    margin-bottom:8px;
+
+}
+
+.ve-dados input,
+.ve-dados select{
+
+    width:100%;
+
+    height:42px;
+
+    border:1px solid #d1d5db;
+
+    border-radius:8px;
+
+    padding:0 12px;
+
+    font-size:14px;
+
+    background:#fff;
+
+}
+
+.ve-dados input:focus,
+.ve-dados select:focus{
+
+    outline:none;
+
+    border-color:#2563eb;
+
+    box-shadow:0 0 0 3px rgba(37,99,235,.10);
+
+}
+
+@media(max-width:1100px){
+
+    .ve-dados{
+
+        grid-template-columns:
+            repeat(2,1fr);
+
+    }
+
+}
+
+@media(max-width:700px){
+
+    .ve-dados{
+
+        grid-template-columns:1fr;
+
+    }
+
+}
+/* =====================================================
+   CARDS DOS PRODUTOS
+=====================================================*/
+
+.ve-produto{
+
+    background:#fff;
+    border:1px solid #e5e7eb;
+    border-radius:10px;
+    padding:14px;
+    margin:10px;
+    transition:.18s;
+    cursor:pointer;
+
+}
+
+.ve-produto:hover{
+
+    border-color:#2563eb;
+    box-shadow:0 4px 14px rgba(37,99,235,.12);
+    transform:translateY(-1px);
+
+}
+
+.ve-produto-nome{
+
+    font-size:15px;
+    font-weight:700;
+    color:#1f2937;
+
+}
+
+.ve-produto-categoria{
+
+    font-size:12px;
+    color:#6b7280;
+    margin-top:3px;
+
+}
+
+.ve-produto-rodape{
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:12px;
+
+}
+
+.ve-produto-preco{
+
+    font-size:18px;
+    font-weight:bold;
+    color:#16a34a;
+
+}
+
+.ve-btn-adicionar{
+
+    border:none;
+    background:#2563eb;
+    color:#fff;
+    padding:8px 14px;
+    border-radius:8px;
+    cursor:pointer;
+
+}
+
+.ve-btn-adicionar:hover{
+
+    background:#1d4ed8;
+
+}
+
+.ve-produto-vazio{
+
+    padding:60px 20px;
+    text-align:center;
+    color:#9ca3af;
+
+}
   </style>
   </head>
   <body>
@@ -3322,33 +3524,23 @@ background:#F9FAFB;
     id="pagina-venda-externa"
     class="pagina"
 >
-
 <div class="titulo">
 
-    <h1>Venda Externa</h1>
+    <h1>Lançamento de Venda Externa</h1>
 
     <p>
-        Lançamento de vendas realizadas por iFood, WhatsApp, telefone,
-        Site, Marketplace e outros canais.
+
+        Registre vendas realizadas por iFood, WhatsApp, Telefone,
+        Site, Marketplace e outros canais externos.
+
     </p>
 
 </div>
 
 
-<!-- =========================
-DADOS DA VENDA
-========================= -->
+<div class="config-card ve-dados">
 
-<div class="config-card">
-
-    <div
-        style="
-            display:grid;
-            grid-template-columns:180px 220px 220px 1fr;
-            gap:20px;
-            align-items:end;
-        "
-    >
+    <div class="ve-dados-grid">
 
         <div>
 
@@ -3364,24 +3556,21 @@ DADOS DA VENDA
 
         <div>
 
-            <label>Origem</label>
+            <label>Origem da Venda</label>
 
-            <select
-                id="ve-origem"
-                onchange="alterarOrigemVendaExterna()"
-            >
+            <select id="ve-origem">
 
-                <option value="IFOOD">iFood</option>
+                <option>iFood</option>
 
-                <option value="WHATSAPP">WhatsApp</option>
+                <option>WhatsApp</option>
 
-                <option value="TELEFONE">Telefone</option>
+                <option>Telefone</option>
 
-                <option value="SITE">Site</option>
+                <option>Site</option>
 
-                <option value="MARKETPLACE">Marketplace</option>
+                <option>Marketplace</option>
 
-                <option value="OUTRO">Outro</option>
+                <option>Outro</option>
 
             </select>
 
@@ -3392,19 +3581,17 @@ DADOS DA VENDA
 
             <label>Forma de Recebimento</label>
 
-            <select
-                id="ve-pagamento"
-            >
+            <select id="ve-pagamento">
 
-                <option value="IFOOD">iFood</option>
+                <option>iFood</option>
 
-                <option value="PIX">PIX</option>
+                <option>PIX</option>
 
-                <option value="DINHEIRO">Dinheiro</option>
+                <option>Dinheiro</option>
 
-                <option value="DEBITO">Cartão Débito</option>
+                <option>Cartão Débito</option>
 
-                <option value="CREDITO">Cartão Crédito</option>
+                <option>Cartão Crédito</option>
 
             </select>
 
@@ -3418,7 +3605,7 @@ DADOS DA VENDA
             <input
                 type="text"
                 id="ve-observacao"
-                placeholder="Pedido nº do iFood (opcional)"
+                placeholder="Ex.: Pedido nº 123456 do iFood"
             >
 
         </div>
@@ -3426,181 +3613,72 @@ DADOS DA VENDA
     </div>
 
 </div>
+<div class="ve-conteudo">
 
-
-<br>
-
-
-<div
-    style="
-        display:grid;
-        grid-template-columns:58% 42%;
-        gap:20px;
-        align-items:start;
-    "
->
-
-
-<!-- ===================================
-COLUNA ESQUERDA
-=================================== -->
-
-<div>
-
+    <!-- ESQUERDA -->
 
     <div class="config-card">
 
-    <h2 style="margin-bottom:20px;">
-        🛒 Adicionar Produtos
-    </h2>
+        <h2>1. Adicione os produtos da venda</h2>
 
-    <div class="ve-pesquisa">
+        <div class="ve-filtros">
 
-        <input
-            id="ve-pesquisa-produto"
-            type="text"
-            placeholder="🔍 Pesquisar produto..."
-            autocomplete="off"
-            oninput="pesquisarProdutoVendaExterna()"
-        >
+            <input
+                type="text"
+                id="ve-pesquisa"
+                placeholder="🔍 Buscar produto..."
+            >
 
-        <select id="ve-categoria">
+            <select id="ve-categoria">
 
-            <option value="">Todas as categorias</option>
+                <option>Todas as categorias</option>
 
-        </select>
+            </select>
 
-    </div>
+        </div>
 
-    <div id="ve-lista-produtos">
+        <div id="ve-lista-produtos">
 
-        <!-- Os cards dos produtos serão criados pelo JavaScript -->
+    <div class="ve-produto-vazio">
+
+        Carregando produtos...
 
     </div>
 
 </div>
-</div>
 
-    <br>
-    <div class="config-card">
+    </div>
 
-    <h2>Itens da Venda</h2>
 
-    <br>
+    <!-- DIREITA -->
 
-    <div class="ve-box">
+<div class="config-card">
 
-    <table
-        style="
-            width:100%;
-            border-collapse:collapse;
-        "
-    >
+    <h2>2. Produtos na venda</h2>
 
-        <thead>
+    <div class="ve-itens">
 
-            <tr>
+        <table class="ve-tabela">
 
-                <th>Produto</th>
+            <thead>
 
-                <th>Preço</th>
+                <tr>
 
-                <th>Venda</th>
+                    <th>Produto</th>
+                    <th>Qtd</th>
+                    <th>Preço</th>
+                    <th>Total</th>
+                    <th></th>
 
-                <th>Qtde</th>
+                </tr>
 
-                <th>Total</th>
-
-                <th></th>
-
-            </tr>
-
-        </thead>
-
-        <tbody id="ve-itens">
-
-            <tr>
-
-                <td
-                    colspan="6"
-                    style="
-                        text-align:center;
-                        padding:45px;
-                        color:#999;
-                    "
-                >
-
-                    Nenhum produto adicionado.
-
-                </td>
-
-            </tr>
-
-        </tbody>
-
-    </table>
-
-</div>
-
-        <table
-    style="
-        width:100%;
-        border-collapse:collapse;
-        font-size:14px;
-    "
->
-
-            <thead
-    style="
-        background:#F8FAFC;
-        position:sticky;
-        top:0;
-        z-index:1;
-    "
->
-
-    <tr>
-
-        <th style="width:35%; padding:14px; text-align:left;">
-            Produto
-        </th>
-
-        <th style="width:12%; padding:14px; text-align:center;">
-            Preço Cadastro
-        </th>
-
-        <th style="width:12%; padding:14px; text-align:center;">
-            Preço Venda
-        </th>
-
-        <th style="width:10%; padding:14px; text-align:center;">
-            Qtde
-        </th>
-
-        <th style="width:16%; padding:14px; text-align:center;">
-            Subtotal
-        </th>
-
-        <th style="width:15%; padding:14px; text-align:center;">
-            Ações
-        </th>
-
-    </tr>
-
-</thead>
+            </thead>
 
             <tbody id="ve-itens">
 
                 <tr>
 
-                    <td
-                        colspan="6"
-                        style="
-                            text-align:center;
-                            padding:40px;
-                            color:#777;
-                        "
-                    >
+                    <td colspan="5" class="ve-vazio">
 
                         Nenhum produto adicionado.
 
@@ -3614,176 +3692,69 @@ COLUNA ESQUERDA
 
     </div>
 
-</div>
+    <div class="ve-resumo">
 
-</div>
+        <div class="campo">
 
-<!-- ===============================
-COLUNA DIREITA
-=============================== -->
+            <label>Subtotal</label>
 
-<div>
+            <input
+                id="ve-subtotal"
+                type="text"
+                readonly>
 
-<div class="config-card">
+        </div>
 
-    <h2>Resumo da Venda</h2>
+        <div class="campo">
 
-    <br>
+            <label>Desconto</label>
 
-    <table
-        style="
-            width:100%;
-        "
-    >
+            <input
+                id="ve-desconto"
+                type="number"
+                step="0.01"
+                value="0"
+                onchange="renderizarVendaExterna()">
 
-        <tr>
+        </div>
 
-            <td>
+        <div class="campo">
 
-                <strong>Subtotal</strong>
+            <label>Acréscimo</label>
 
-            </td>
+            <input
+                id="ve-acrescimo"
+                type="number"
+                step="0.01"
+                value="0"
+                onchange="renderizarVendaExterna()">
 
-            <td
-                style="
-                    text-align:right;
-                "
-            >
+        </div>
 
-                <span id="ve-subtotal">
+        <div class="campo">
 
-                    R$ 0,00
+            <label>Total</label>
 
-                </span>
+            <input
+                id="ve-total"
+                type="text"
+                readonly>
 
-            </td>
+        </div>
 
-        </tr>
+        <div class="ve-acoes">
 
-        <tr>
+            <button
+                class="btn btn-primario"
+                onclick="salvarVendaExterna()">
 
-            <td>
+                💾 Salvar Venda
 
-                Desconto
+            </button>
 
-            </td>
+        </div>
 
-            <td>
-
-                <input
-
-                    id="ve-desconto"
-
-                    type="number"
-
-                    step="0.01"
-
-                    value="0"
-
-                    oninput="calcularTotalVendaExterna()"
-
-                >
-
-            </td>
-
-        </tr>
-
-        <tr>
-
-            <td>
-
-                Acréscimo
-
-            </td>
-
-            <td>
-
-                <input
-
-                    id="ve-acrescimo"
-
-                    type="number"
-
-                    step="0.01"
-
-                    value="0"
-
-                    oninput="calcularTotalVendaExterna()"
-
-                >
-
-            </td>
-
-        </tr>
-
-        <tr>
-
-            <td>
-
-                <strong>Total</strong>
-
-            </td>
-
-            <td
-                style="
-                    text-align:right;
-                    font-size:24px;
-                    font-weight:bold;
-                    color:#0F766E;
-                "
-            >
-
-                <span
-    id="ve-total"
-    style="
-        font-size:34px;
-        color:#059669;
-        font-weight:bold;
-    "
->
-
-                    R$ 0,00
-
-                </span>
-
-            </td>
-
-        </tr>
-
-    </table>
-
-    <br>
-    <div
-    style="
-        display:flex;
-        gap:15px;
-        margin-top:20px;
-    "
->
-
-    <button
-        class="btn"
-        style="
-            flex:1;
-            background:#6B7280;
-            color:#FFF;
-        "
-        onclick="limparVendaExterna()"
-    >
-        🗑 Limpar Venda
-    </button>
-
-    <button
-        class="btn btn-primario"
-        style="
-            flex:2;
-        "
-        onclick="salvarVendaExterna()"
-    >
-        💾 Salvar Venda
-    </button>
-
-</div>
+    </div>
 
 </div>
 
@@ -4153,6 +4124,12 @@ COLUNA DIREITA
   let modoTransferencia = 'TUDO';
   let itemArrastadoComanda = null;
   const cacheDetalhesComandas = {};
+
+  // ======================================================
+// VENDA EXTERNA
+// ======================================================
+
+let itensVendaExterna = [];
 
   function carregarComandas() {
     google.script.run
@@ -7220,69 +7197,64 @@ function atualizarHistorico() {
   if (pagina === 'dashboard') {
     carregarDashboard();
   }
-  if (pagina === 'historico') {
-  carregarHistorico();
-}
 
-if (pagina === 'venda-externa') {
+  if (pagina === 'historico') {
+    carregarHistorico();
+  }
+
+  if (pagina === 'venda-externa') {
 
     const campoData = document.getElementById('ve-data');
 
     if (campoData) {
-        campoData.value = new Date().toISOString().split('T')[0];
+      campoData.value = new Date().toISOString().split('T')[0];
     }
 
-}
-
- if (pagina === 'produtos') {
-
-  const agora = Date.now();
-
-  const cacheAindaValido =
-    produtosCarregados.length > 0 &&
-    (agora - ultimaAtualizacaoProdutos) < TEMPO_CACHE_PRODUTOS;
-
-  if (cacheAindaValido) {
-
-    renderizarProdutos(produtosCarregados);
-
-  } else {
-
-    carregarProdutos();
+    carregarProdutosVendaExterna();
   }
-}
+
+  if (pagina === 'produtos') {
+
+    const agora = Date.now();
+
+    const cacheAindaValido =
+      produtosCarregados.length > 0 &&
+      (agora - ultimaAtualizacaoProdutos) < TEMPO_CACHE_PRODUTOS;
+
+    if (cacheAindaValido) {
+      renderizarProdutos(produtosCarregados);
+    } else {
+      carregarProdutos();
+    }
+  }
 
   if (pagina === 'configuracoes') {
     carregarConfiguracoesGerais();
   }
+
   if (pagina === 'financeiro') {
 
-if (pagina === 'venda-externa') {
+    const agora = Date.now();
 
-    iniciarVendaExterna();
+    const cacheFinanceiroValido =
+      contasFinanceirasCarregadas.length > 0 &&
+      (agora - ultimaAtualizacaoFinanceiro) < TEMPO_CACHE_FINANCEIRO;
 
-}
-  const agora = Date.now();
+    if (cacheFinanceiroValido) {
 
-  const cacheFinanceiroValido =
-    contasFinanceirasCarregadas.length > 0 &&
-    (agora - ultimaAtualizacaoFinanceiro) < TEMPO_CACHE_FINANCEIRO;
+      renderizarFinanceiro(contasFinanceirasCarregadas);
 
-  if (cacheFinanceiroValido) {
+      atualizarCardsFinanceiro(
+        contasFinanceirasCarregadas
+      );
 
-    renderizarFinanceiro(contasFinanceirasCarregadas);
+    } else {
 
-    atualizarCardsFinanceiro(
-      contasFinanceirasCarregadas
-    );
+      carregarFinanceiro();
+    }
 
-  } else {
-
-    carregarFinanceiro();
+    carregarOpcoesFinanceiro();
   }
-
-  carregarOpcoesFinanceiro();
-}
 }
 
 
@@ -8018,6 +7990,158 @@ function salvarConfiguracoesGerais(botao) {
     .salvarConfiguracoesSistema(configuracoes);
 }
 
+function carregarProdutosVendaExterna() {
+
+    google.script.run
+        .withSuccessHandler(function(produtos){
+
+            const lista =
+                document.getElementById("ve-lista-produtos");
+
+            if (!lista) return;
+
+            lista.innerHTML = "";
+
+            produtos
+                .filter(p => p.ativo)
+                .forEach(function(produto){
+                  console.log(produto);
+
+                    lista.innerHTML += `
+<div
+    class="ve-produto"
+    data-id="${produto.id}"
+    data-nome="${produto.nome}"
+    data-preco="${produto.preco}"
+    data-categoria="${produto.categoria}"
+>
+
+                            <div class="ve-produto-nome">
+                                ${produto.nome}
+                            </div>
+
+                            <div class="ve-produto-categoria">
+                                ${produto.categoria}
+                            </div>
+
+                            <div class="ve-produto-rodape">
+
+                                <div class="ve-produto-preco">
+
+                                    R$ ${Number(produto.preco).toFixed(2).replace(".", ",")}
+
+                                </div>
+
+                                <button
+    class="ve-btn-adicionar"
+    onclick="adicionarProdutoVendaExterna('${produto.id}')"
+>
+
+    Adicionar
+
+</button>
+
+                            </div>
+
+                        </div>
+                    `;
+
+                });
+
+        })
+        .listarProdutosVendaExterna();
+
+}
+
+
+
+function adicionarProdutoVendaExterna(idProduto){
+
+    const card = document.querySelector(
+        '[data-id="'+idProduto+'"]'
+    );
+
+    if(!card) return;
+
+    const nome = card.dataset.nome;
+    const categoria = card.dataset.categoria;
+    const preco = Number(card.dataset.preco);
+
+    const existente = itensVendaExterna.find(function(item){
+        return item.id === idProduto;
+    });
+
+    if(existente){
+
+        existente.quantidade++;
+        existente.total =
+            existente.quantidade * existente.preco;
+
+    }else{
+
+        itensVendaExterna.push({
+
+            id:idProduto,
+            nome:nome,
+            categoria:categoria,
+            quantidade:1,
+            preco:preco,
+            total:preco
+
+        });
+
+    }
+
+    console.log(itensVendaExterna);
+
+renderizarItensVendaExterna();
+
+}
+function renderizarItensVendaExterna(){
+
+    const tbody = document.getElementById("ve-itens");
+
+    if(!tbody) return;
+
+    if(itensVendaExterna.length===0){
+
+        tbody.innerHTML=`
+            <tr>
+                <td colspan="5" class="ve-vazio">
+                    Nenhum produto adicionado.
+                </td>
+            </tr>
+        `;
+
+        return;
+
+    }
+
+    tbody.innerHTML="";
+
+    itensVendaExterna.forEach(function(item){
+
+        tbody.innerHTML += `
+
+        <tr>
+
+            <td>${item.nome}</td>
+
+            <td>${item.quantidade}</td>
+
+            <td>R$ ${item.preco.toFixed(2).replace(".",",")}</td>
+
+            <td>R$ ${(item.quantidade*item.preco).toFixed(2).replace(".",",")}</td>
+
+            <td>🗑</td>
+
+        </tr>
+
+        `;
+
+    });
+
+}
 
 // Carrega auditoria
 function carregarAuditoria() {
