@@ -1257,16 +1257,10 @@
 .ve-conteudo{
 
     display:grid;
-
-    grid-template-columns:1.2fr 1fr;
-
+    grid-template-columns:1fr 1.15fr;
     gap:22px;
-
     margin-top:22px;
-
     align-items:start;
-
-    max-width:1080px;
 
 }
 
@@ -1276,20 +1270,24 @@
 
 }
 
+/* ===========================
+   COLUNA ESQUERDA
+===========================*/
+
 .ve-filtros{
 
-    display:flex;
-    gap:12px;
-    margin:18px 0;
+    margin:16px 0;
 
 }
 
 #ve-pesquisa{
 
-    flex:1;
+    width:100%;
+
     height:42px;
 
     border:1px solid #d1d5db;
+
     border-radius:8px;
 
     padding:0 14px;
@@ -1300,40 +1298,47 @@
 
 #ve-categoria{
 
-    width:220px;
+    width:200px;
     height:42px;
-
     border:1px solid #d1d5db;
     border-radius:8px;
-
     padding:0 10px;
-
     background:#fff;
 
 }
 
 #ve-lista-produtos{
 
-    height:560px;
+    display:grid;
 
-    border:1px solid #e5e7eb;
-    border-radius:10px;
+    grid-template-columns:repeat(2,1fr);
+
+    gap:12px;
+
+    height:560px;
 
     overflow-y:auto;
 
-    background:#fafafa;
+    padding:4px;
+
+}
+
+/* ===========================
+   COLUNA DIREITA
+===========================*/
+
+.ve-carrinho{
+
+    display:flex;
+    flex-direction:column;
 
 }
 
 .ve-itens{
 
-    height:560px;
-
     border:1px solid #e5e7eb;
     border-radius:10px;
-
-    overflow:auto;
-
+    overflow:hidden;
     background:#fff;
 
 }
@@ -1342,103 +1347,151 @@
 
     width:100%;
     border-collapse:collapse;
+    table-layout:fixed;
 
 }
 
 .ve-tabela th{
 
     background:#f9fafb;
-
-    padding:14px;
-
+    padding:14px 10px;
     border-bottom:1px solid #e5e7eb;
-
     font-size:13px;
-
     color:#6b7280;
-
     text-align:center;
 
 }
 
 .ve-tabela td{
 
-    padding:14px;
-
+    padding:10px;
     border-bottom:1px solid #e5e7eb;
+    text-align:center;
+    vertical-align:middle;
 
+}
+
+.ve-tabela input{
+
+    width:100%;
+    height:34px;
+    border:1px solid #d1d5db;
+    border-radius:6px;
     text-align:center;
 
 }
 
 .ve-vazio{
 
-    padding:80px 20px !important;
-
+    padding:60px;
     color:#9ca3af;
-
     text-align:center;
 
 }
 
+/* ===========================
+   RESUMO
+===========================*/
+
 .ve-resumo{
 
-    margin-top:20px;
+    margin-top:18px;
+    padding-top:18px;
+    border-top:1px solid #e5e7eb;
 
-    padding:20px;
+}
 
-    background:#fff;
+.ve-linha{
 
-    border-radius:12px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:16px;
 
-    border:1px solid #e5e7eb;
+}
 
-    display:grid;
+.ve-linha span{
 
-    grid-template-columns:
-        repeat(4,1fr);
+    color:#6b7280;
+    font-weight:600;
 
-    gap:16px;
+}
+
+.ve-linha strong{
+
+    font-size:18px;
+    color:#111827;
 
 }
 
 .ve-resumo .campo{
 
-    display:flex;
-
-    flex-direction:column;
+    margin-bottom:14px;
 
 }
 
 .ve-resumo label{
 
-    font-size:13px;
-
-    font-weight:600;
-
+    display:block;
     margin-bottom:6px;
+    font-size:13px;
+    font-weight:600;
 
 }
 
 .ve-resumo input{
 
+    width:100%;
     height:42px;
+    border:1px solid #d1d5db;
+    border-radius:8px;
+    padding:0 12px;
 
-    padding:8px 12px;
+}
+
+.ve-total-geral{
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:18px;
+    padding-top:18px;
+    border-top:2px solid #e5e7eb;
+
+}
+
+.ve-total-geral span{
+
+    font-size:18px;
+    font-weight:700;
+
+}
+
+.ve-total-geral strong{
+
+    font-size:28px;
+    color:#16a34a;
+    font-weight:700;
 
 }
 
 .ve-acoes{
 
-    grid-column:1/-1;
-
-    display:flex;
-
-    justify-content:flex-end;
-
-    margin-top:10px;
+    margin-top:20px;
 
 }
+
+.ve-acoes button{
+
+    width:100%;
+    height:48px;
+
+}
+
+/* ===========================
+   RESPONSIVO
+===========================*/
+
 @media(max-width:1100px){
 
     .ve-conteudo{
@@ -1447,27 +1500,15 @@
 
     }
 
-    #ve-categoria{
-
-        width:190px;
-
-    }
-
 }
 
-@media(max-width:700px){
+/* =====================================================
+   DADOS DA VENDA
+=====================================================*/
 
-    .ve-filtros{
+.ve-dados{
 
-        flex-direction:column;
-
-    }
-
-    #ve-categoria{
-
-        width:100%;
-
-    }
+    margin-bottom:22px;
 
 }
 
@@ -1476,42 +1517,12 @@
     display:grid;
 
     grid-template-columns:
-        170px
+        160px
+        190px
         220px
-        230px
-        300px;
+        1fr;
 
     gap:18px;
-
-    align-items:end;
-
-}
-
-#ve-observacao{
-
-    width:100%;
-
-    min-width:320px;
-
-}
-
-
-/* =====================================================
-   DADOS DA VENDA
-=====================================================*/
-
-.ve-dados{
-
-    display:grid;
-
-    grid-template-columns:
-        180px
-        190px
-        320px
-        minmax(7
-        420px,1fr);
-
-    gap:22px;
 
     align-items:end;
 
@@ -1529,11 +1540,11 @@
 
     font-size:13px;
 
-    font-weight:700;
+    font-weight:600;
 
     color:#4b5563;
 
-    margin-bottom:8px;
+    margin-bottom:6px;
 
 }
 
@@ -1569,7 +1580,7 @@
 
 @media(max-width:1100px){
 
-    .ve-dados{
+    .ve-dados-grid{
 
         grid-template-columns:
             repeat(2,1fr);
@@ -1580,7 +1591,7 @@
 
 @media(max-width:700px){
 
-    .ve-dados{
+    .ve-dados-grid{
 
         grid-template-columns:1fr;
 
@@ -1594,12 +1605,24 @@
 .ve-produto{
 
     background:#fff;
+
     border:1px solid #e5e7eb;
+
     border-radius:10px;
-    padding:14px;
-    margin:10px;
-    transition:.18s;
+
+    padding:12px;
+
     cursor:pointer;
+
+    transition:.2s;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:space-between;
+
+    min-height:120px;
 
 }
 
@@ -1639,7 +1662,9 @@
 .ve-produto-preco{
 
     font-size:18px;
-    font-weight:bold;
+
+    font-weight:700;
+
     color:#16a34a;
 
 }
@@ -1647,11 +1672,20 @@
 .ve-btn-adicionar{
 
     border:none;
+
     background:#2563eb;
+
     color:#fff;
-    padding:8px 14px;
+
+    padding:6px 12px;
+
     border-radius:8px;
+
     cursor:pointer;
+
+    font-size:13px;
+
+    font-weight:600;
 
 }
 
@@ -3623,19 +3657,13 @@
 
         <div class="ve-filtros">
 
-            <input
-                type="text"
-                id="ve-pesquisa"
-                placeholder="🔍 Buscar produto..."
-            >
+    <input
+        type="text"
+        id="ve-pesquisa"
+        placeholder="🔍 Pesquise por nome, categoria ou código..."
+    >
 
-            <select id="ve-categoria">
-
-                <option>Todas as categorias</option>
-
-            </select>
-
-        </div>
+</div>
 
         <div id="ve-lista-produtos">
 
@@ -3652,9 +3680,9 @@
 
     <!-- DIREITA -->
 
-<div class="config-card">
+<div class="config-card ve-carrinho">
 
-    <h2>2. Produtos na venda</h2>
+    <h2>2. Produtos na Venda</h2>
 
     <div class="ve-itens">
 
@@ -3664,11 +3692,17 @@
 
                 <tr>
 
-                    <th>Produto</th>
-                    <th>Qtd</th>
-                    <th>Preço</th>
-                    <th>Total</th>
-                    <th></th>
+                    <th style="width:32%">Produto</th>
+
+                    <th style="width:12%">Qtd</th>
+
+                    <th style="width:16%">Cadastro</th>
+
+                    <th style="width:16%">Venda</th>
+
+                    <th style="width:18%">Total</th>
+
+                    <th style="width:6%"></th>
 
                 </tr>
 
@@ -3678,7 +3712,9 @@
 
                 <tr>
 
-                    <td colspan="5" class="ve-vazio">
+                    <td
+                        colspan="6"
+                        class="ve-vazio">
 
                         Nenhum produto adicionado.
 
@@ -3694,14 +3730,15 @@
 
     <div class="ve-resumo">
 
-        <div class="campo">
+        <div class="ve-linha">
 
-            <label>Subtotal</label>
+            <span>Subtotal</span>
 
-            <input
-                id="ve-subtotal"
-                type="text"
-                readonly>
+            <strong id="ve-subtotal">
+
+                R$ 0,00
+
+            </strong>
 
         </div>
 
@@ -3731,14 +3768,15 @@
 
         </div>
 
-        <div class="campo">
+        <div class="ve-total-geral">
 
-            <label>Total</label>
+            <span>TOTAL</span>
 
-            <input
-                id="ve-total"
-                type="text"
-                readonly>
+            <strong id="ve-total">
+
+                R$ 0,00
+
+            </strong>
 
         </div>
 
@@ -3759,8 +3797,6 @@
 </div>
 
 </div>
-
-</section>
   <!-- CONFIGURAÇÕES -->
 
   <section
@@ -4129,7 +4165,7 @@
 // VENDA EXTERNA
 // ======================================================
 
-let itensVendaExterna = [];
+let vendaExternaItens = [];
 
   function carregarComandas() {
     google.script.run
@@ -5619,22 +5655,19 @@ let vendaExternaItens = [];
 
 function adicionarProdutoVendaExterna(idProduto){
 
-    const produto = produtosPDV.find(function(item){
+    const card = document.querySelector(
+        '[data-id="'+idProduto+'"]'
+    );
 
-        return String(item.id) === String(idProduto);
+    if(!card) return;
+
+    const preco = Number(card.dataset.preco);
+
+    const existente = vendaExternaItens.find(function(item){
+
+        return String(item.idProduto) === String(idProduto);
 
     });
-
-    if(!produto){
-        return;
-    }
-
-    const existente =
-        vendaExternaItens.find(function(item){
-
-            return String(item.idProduto) === String(produto.id);
-
-        });
 
     if(existente){
 
@@ -5644,26 +5677,19 @@ function adicionarProdutoVendaExterna(idProduto){
 
         vendaExternaItens.push({
 
-            idProduto: produto.id,
+            idProduto:idProduto,
 
-            nome: produto.nome,
+            nome:card.dataset.nome,
 
-            precoCadastro:
-                Number(
-                    produto.preco || 0
-                ),
+            categoria:card.dataset.categoria,
 
-            precoVenda:
-                Number(
-                    produto.preco || 0
-                ),
+            precoCadastro:preco,
 
-            quantidade: 1,
+            precoVenda:preco,
 
-            subtotal:
-                Number(
-                    produto.preco || 0
-                )
+            quantidade:1,
+
+            subtotal:preco
 
         });
 
@@ -5679,18 +5705,15 @@ function adicionarProdutoVendaExterna(idProduto){
 
 function renderizarVendaExterna(){
 
-    const tbody =
-        document.getElementById("ve-itens");
+    const tbody = document.getElementById("ve-itens");
 
-    if(!tbody){
-        return;
-    }
+    if(!tbody) return;
 
-    tbody.innerHTML = "";
+    tbody.innerHTML="";
 
-    let subtotal = 0;
+    let subtotal=0;
 
-    vendaExternaItens.forEach(function(item, indice){
+    vendaExternaItens.forEach(function(item,indice){
 
         item.subtotal =
             Number(item.precoVenda) *
@@ -5702,17 +5725,9 @@ function renderizarVendaExterna(){
 
 <tr>
 
-<td>${item.nome}</td>
+<td style="text-align:left">
 
-<td>${formatarMoeda(item.precoCadastro)}</td>
-
-<td>
-
-<input
-type="number"
-step="0.01"
-value="${item.precoVenda}"
-onchange="alterarPrecoVendaExterna(${indice},this.value)">
+${item.nome}
 
 </td>
 
@@ -5726,11 +5741,32 @@ onchange="alterarQuantidadeVendaExterna(${indice},this.value)">
 
 </td>
 
-<td>${formatarMoeda(item.subtotal)}</td>
+<td>
+
+${formatarMoeda(item.precoCadastro)}
+
+</td>
+
+<td>
+
+<input
+type="number"
+step="0.01"
+value="${item.precoVenda}"
+onchange="alterarPrecoVendaExterna(${indice},this.value)">
+
+</td>
+
+<td>
+
+${formatarMoeda(item.subtotal)}
+
+</td>
 
 <td>
 
 <button
+class="btn-remover"
 onclick="removerItemVendaExterna(${indice})">
 
 🗑
@@ -5747,13 +5783,13 @@ onclick="removerItemVendaExterna(${indice})">
 
     if(vendaExternaItens.length===0){
 
-        tbody.innerHTML = `
+        tbody.innerHTML=`
 
 <tr>
 
 <td
 colspan="6"
-class="mensagem-vazia">
+class="ve-vazio">
 
 Nenhum produto adicionado.
 
@@ -5766,27 +5802,21 @@ Nenhum produto adicionado.
     }
 
     const desconto =
-        Number(
-            document.getElementById("ve-desconto").value || 0
-        );
+        Number(document.getElementById("ve-desconto").value || 0);
 
     const acrescimo =
-        Number(
-            document.getElementById("ve-acrescimo").value || 0
-        );
+        Number(document.getElementById("ve-acrescimo").value || 0);
 
     const total =
         subtotal
         - desconto
         + acrescimo;
 
-    document.getElementById("ve-subtotal").value =
+    document.getElementById("ve-subtotal").textContent =
         formatarMoeda(subtotal);
 
-    document.getElementById("ve-total").value =
-        formatarMoeda(
-            total < 0 ? 0 : total
-        );
+    document.getElementById("ve-total").textContent =
+        formatarMoeda(total<0?0:total);
 
 }
 
@@ -8055,93 +8085,7 @@ function carregarProdutosVendaExterna() {
 
 
 
-function adicionarProdutoVendaExterna(idProduto){
 
-    const card = document.querySelector(
-        '[data-id="'+idProduto+'"]'
-    );
-
-    if(!card) return;
-
-    const nome = card.dataset.nome;
-    const categoria = card.dataset.categoria;
-    const preco = Number(card.dataset.preco);
-
-    const existente = itensVendaExterna.find(function(item){
-        return item.id === idProduto;
-    });
-
-    if(existente){
-
-        existente.quantidade++;
-        existente.total =
-            existente.quantidade * existente.preco;
-
-    }else{
-
-        itensVendaExterna.push({
-
-            id:idProduto,
-            nome:nome,
-            categoria:categoria,
-            quantidade:1,
-            preco:preco,
-            total:preco
-
-        });
-
-    }
-
-    console.log(itensVendaExterna);
-
-renderizarItensVendaExterna();
-
-}
-function renderizarItensVendaExterna(){
-
-    const tbody = document.getElementById("ve-itens");
-
-    if(!tbody) return;
-
-    if(itensVendaExterna.length===0){
-
-        tbody.innerHTML=`
-            <tr>
-                <td colspan="5" class="ve-vazio">
-                    Nenhum produto adicionado.
-                </td>
-            </tr>
-        `;
-
-        return;
-
-    }
-
-    tbody.innerHTML="";
-
-    itensVendaExterna.forEach(function(item){
-
-        tbody.innerHTML += `
-
-        <tr>
-
-            <td>${item.nome}</td>
-
-            <td>${item.quantidade}</td>
-
-            <td>R$ ${item.preco.toFixed(2).replace(".",",")}</td>
-
-            <td>R$ ${(item.quantidade*item.preco).toFixed(2).replace(".",",")}</td>
-
-            <td>🗑</td>
-
-        </tr>
-
-        `;
-
-    });
-
-}
 
 // Carrega auditoria
 function carregarAuditoria() {
